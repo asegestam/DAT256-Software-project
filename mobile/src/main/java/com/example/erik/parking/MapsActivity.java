@@ -10,13 +10,15 @@ import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 
-import java.util.LinkedHashMap;
-import java.util.LinkedHashSet;
 
 public class MapsActivity extends FragmentActivity implements OnMapReadyCallback {
 
     private GoogleMap mMap;
+<<<<<<< HEAD
     private int hej;
+=======
+    
+>>>>>>> master
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
