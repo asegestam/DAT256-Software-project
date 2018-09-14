@@ -27,8 +27,14 @@ proguard/
 *.log
 
 # Android Studio Navigation editor temp files
-.navigation/
-
+*.iml
+.idea
+#.idea/workspace.xml - remove # and delete .idea if it better suit your needs.
+.gradle
+build/
+.navigation
+captures/
+output.json 
 # Android Studio captures folder
 captures/
 
