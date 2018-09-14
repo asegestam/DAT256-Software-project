@@ -15,8 +15,12 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
     private GoogleMap mMap;
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
 
+>>>>>>> master
+=======
+    //HEJ
 >>>>>>> master
 
     //hejhejehj
