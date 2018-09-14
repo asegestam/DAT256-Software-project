@@ -14,16 +14,7 @@ import com.google.android.gms.maps.model.MarkerOptions;
 public class MapsActivity extends FragmentActivity implements OnMapReadyCallback {
 
     private GoogleMap mMap;
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
 
->>>>>>> master
-=======
-    //HEJ
->>>>>>> master
-
-    //hejhejehj
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
