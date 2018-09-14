@@ -17,7 +17,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
     private GoogleMap mMap;
     private int hej;
-    private LinkedHashSet<E> kaos;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
