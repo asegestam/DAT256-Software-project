@@ -1,4 +1,4 @@
-# DAT256-Software-project
+# DAT256-Software-project, Par-King
 
 ### Project Members:
 
