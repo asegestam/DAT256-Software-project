@@ -12,6 +12,7 @@ Erik Tallbacka: eriktallbacka@hotmail.com 		alt. erikta@student.chalmers.se
 
 Albin Segestam: abbesegestam@gmail.com 	alt. segestam@student.chalmers.se
 
+## Links for Håkan, Jan-Philipp
 
 Link to our team document including team reflections, social contract, DoD:https://docs.google.com/document/d/13Lf5KrzTKrshp3Xcl7KgJwdo27ADUuyQJxzg6MNbF6U/edit#
 
