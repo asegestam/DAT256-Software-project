@@ -1,4 +1,5 @@
 <resources>
     <string name="app_name">Par-King</string>
     <string name="Menu">Menu</string>
+    <string name="Map">Map</string>
 </resources>
