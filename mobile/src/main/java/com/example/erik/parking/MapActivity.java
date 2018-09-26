@@ -20,13 +20,17 @@ import com.google.android.gms.maps.SupportMapFragment;
 
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.Marker;
+import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.tasks.Task;
 import com.google.android.gms.tasks.OnCompleteListener;
 
+import java.util.ArrayList;
 
 
-public class MapActivity extends AppCompatActivity implements OnMapReadyCallback {
+public class MapActivity extends AppCompatActivity implements OnMapReadyCallback, GoogleMap.OnMarkerClickListener {
 
     private static final String TAG = "MapActivity";
 
@@ -34,6 +38,12 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
     private static final String COARSE_LOCATION = Manifest.permission.ACCESS_COARSE_LOCATION;
     private static final int LOCATION_PERMISSION_REQUEST_CODE = 1234;
     private static final float DEFAULT_ZOOM = 15f;
+
+    //Statiska Positioner
+    private static final LatLng LindholmenParkering = new LatLng(57.707664, 11.938690);
+    private Marker mLHP;
+
+    private ArrayList<LatLng> pPositions;
 
     private Boolean mLocationPermissionsGranted = false;
     private GoogleMap mMap;
@@ -55,6 +65,7 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
 
         if (mLocationPermissionsGranted) {
             getDeviceLocation();
+            showParkings(mMap);
 
             if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED
                     && ActivityCompat.checkSelfPermission(this,
@@ -157,6 +168,19 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
             }
         }
     }
-
-
+    /** Adds a static position for a parkingplace */
+    public void showParkings(GoogleMap mMap){
+        mLHP = mMap.addMarker(new MarkerOptions().
+                position(LindholmenParkering).
+                title("Lindholmsallén Parkering").
+                snippet("Här kan man visa information om parkeringen"));
+        mMap.setOnMarkerClickListener(this);
+    }
+    /** Called when a user clicks on the marker */
+    @Override
+    public boolean onMarkerClick(Marker marker) {
+        //Sets the color of the clicked marker to azure blue
+        marker.setIcon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_AZURE));
+        return false;
+    }
 }
