@@ -12,6 +12,8 @@ import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.PopupMenu;
 import android.widget.Toast;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -31,7 +33,7 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import java.util.ArrayList;
 
 
-public class MapActivity extends AppCompatActivity implements OnMapReadyCallback, GoogleMap.OnMarkerClickListener {
+public class MapActivity extends AppCompatActivity implements OnMapReadyCallback, GoogleMap.OnMarkerClickListener, PopupMenu.OnMenuItemClickListener {
 
     private static final String TAG = "MapActivity";
 
@@ -184,15 +186,16 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
         marker.setIcon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_AZURE));
         return false;
     }
-    /**Creates a option menu to choose map type*/
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.maptype_menu, menu);
-        return true;
+    public void showPopup(View v) {
+        PopupMenu popup = new PopupMenu(this, v);
+
+        // This activity implements OnMenuItemClickListener
+        popup.setOnMenuItemClickListener(this);
+        popup.inflate(R.menu.maptype_menu);
+        popup.show();
     }
-    /** Sets map type depending on what option was selected */
     @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
+    public boolean onMenuItemClick(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.maptype_normal:
                 mMap.setMapType(GoogleMap.MAP_TYPE_NORMAL);
@@ -210,4 +213,9 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
         return true;
     }
 
+
+    @Override
+    public void onPointerCaptureChanged(boolean hasCapture) {
+
+    }
 }
