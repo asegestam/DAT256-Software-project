@@ -22,15 +22,20 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        //set contentview to activity_main
         setContentView(R.layout.activity_main);
 
+        //Check if google services is ok before init()
         if (isServicesOK()) {
             init();
         }
     }
 
 
-    private void init(){
+    private void init() {
+
+        //OnClickListener for the btnMap button
         Button btnMap = (Button) findViewById(R.id.btnMap);
         btnMap.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -39,12 +44,24 @@ public class MainActivity extends AppCompatActivity {
                 startActivity(intent);
             }
         });
+
+        //OnclickListener for the btnParkingList button
+        Button btnParkingList = (Button) findViewById(R.id.btnParkingList);
+        btnParkingList.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(MainActivity.this, ParkingListActivity.class);
+                startActivity(intent);
+            }
+        });
     }
 
     public boolean isServicesOK(){
         Log.d(TAG, "isServicesOK: checking google services version");
+
         int available = GoogleApiAvailability.getInstance().isGooglePlayServicesAvailable(MainActivity.this);
 
+        //Check if the google play services is available on device
         if (available == ConnectionResult.SUCCESS) {
             //Everything is good and clear to go with the user
             Log.d(TAG, "isServicesOK: Google play services is working");
