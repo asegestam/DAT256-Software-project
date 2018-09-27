@@ -20,13 +20,17 @@ import com.google.android.gms.maps.SupportMapFragment;
 
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.Marker;
+import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.tasks.Task;
 import com.google.android.gms.tasks.OnCompleteListener;
 
+import java.util.ArrayList;
 
 
-public class MapActivity extends AppCompatActivity implements OnMapReadyCallback {
+public class MapActivity extends AppCompatActivity implements OnMapReadyCallback, GoogleMap.OnMarkerClickListener {
 
     private static final String TAG = "MapActivity";
 
@@ -34,6 +38,12 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
     private static final String COARSE_LOCATION = Manifest.permission.ACCESS_COARSE_LOCATION;
     private static final int LOCATION_PERMISSION_REQUEST_CODE = 1234;
     private static final float DEFAULT_ZOOM = 15f;
+
+    //Statiska Positioner
+    private static final LatLng LindholmenParkering = new LatLng(57.707664, 11.938690);
+    private Marker mLHP;
+
+    private ArrayList<LatLng> pPositions;
 
     private Boolean mLocationPermissionsGranted = false;
     private GoogleMap mMap;
@@ -49,12 +59,16 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
 
     @Override
     public void onMapReady(GoogleMap googleMap) {
+
+        //Notify the user that the map is ready to be used
         Toast.makeText(this, "Map is Ready", Toast.LENGTH_SHORT).show();
         Log.d(TAG, "onMapReady: Map is ready");
         mMap = googleMap;
 
+        //Check if it is ok to get device location
         if (mLocationPermissionsGranted) {
             getDeviceLocation();
+            showParkings(mMap);
 
             if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED
                     && ActivityCompat.checkSelfPermission(this,
@@ -73,6 +87,7 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
         }
     }
 
+    /*Initializes the map*/
     private void initMap(){
         Log.d(TAG, "initMap: initializing the map");
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
@@ -80,14 +95,18 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
 
         mapFragment.getMapAsync(MapActivity.this);
     }
-    
+
+    /*Gets the location from the device and sets it on the map*/
     private void getDeviceLocation() {
         Log.d(TAG, "getDeviceLocation: Getting the current location of this device");
 
+        //Objekt to be used to get the location of the user
         mFusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this);
 
         try {
+            //check the location permission
             if (mLocationPermissionsGranted) {
+                //Get last known location from the device
                 final Task location = mFusedLocationProviderClient.getLastLocation();
                 location.addOnCompleteListener(new OnCompleteListener() {
                     @Override
@@ -112,30 +131,37 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
             Log.d(TAG, "getDevicePosition: SecurityException: " + e.getMessage());
         }
     }
-    
+
+    /*Moves the camera view of the map to wanted location and zoom*/
     private void moveCamera(LatLng latLng, float zoom) {
         Log.d(TAG, "moveCamera: Moving the camera to lat: " + latLng.latitude + ", lng: " + latLng.longitude);
 
         mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, zoom));
     }
 
+    /*Gets the necessary permissions from the user or asks for them*/
     private void getLocationPermission() {
         Log.d(TAG, "getLocationPermission: getting location permissions");
         String[] permissions = {Manifest.permission.ACCESS_FINE_LOCATION,
                                 Manifest.permission.ACCESS_COARSE_LOCATION};
 
+        //Check the permissions fine_location and coarse_location from the user
         if (ContextCompat.checkSelfPermission(this.getApplicationContext(), FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
             if (ContextCompat.checkSelfPermission(this.getApplicationContext(), COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
                 mLocationPermissionsGranted = true;
+                //Every permission is granted, initialize the map
                 initMap();
             } else {
+                //Ask for the fine_location permission because it was not already granted
                 ActivityCompat.requestPermissions(this, permissions, LOCATION_PERMISSION_REQUEST_CODE);
             }
         } else {
+            //Ask for the coarse_location permission because it was not already granted
             ActivityCompat.requestPermissions(this, permissions, LOCATION_PERMISSION_REQUEST_CODE);
         }
     }
 
+    
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         Log.d(TAG, "onRequestPermissionsResult: Checking the results of the permission requests");
@@ -157,6 +183,19 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
             }
         }
     }
-
-
+    /** Adds a static position for a parkingplace */
+    public void showParkings(GoogleMap mMap){
+        mLHP = mMap.addMarker(new MarkerOptions().
+                position(LindholmenParkering).
+                title("Lindholmsallén Parkering").
+                snippet("Här kan man visa information om parkeringen"));
+        mMap.setOnMarkerClickListener(this);
+    }
+    /** Called when a user clicks on the marker */
+    @Override
+    public boolean onMarkerClick(Marker marker) {
+        //Sets the color of the clicked marker to azure blue
+        marker.setIcon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_AZURE));
+        return false;
+    }
 }
