@@ -12,8 +12,16 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.Toast;
 
+import com.android.volley.Request;
+import com.android.volley.RequestQueue;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.StringRequest;
+import com.android.volley.toolbox.Volley;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
+
+import static com.android.volley.toolbox.Volley.newRequestQueue;
 
 
 public class MainActivity extends AppCompatActivity {
@@ -21,6 +29,16 @@ public class MainActivity extends AppCompatActivity {
     private static final String TAG = "MainActivity";
     private DrawerLayout mDrawerLayout;
     private static final int ERROR_DIALOG_REQUEST = 9001;
+
+
+    private Button btnSendRequest;
+
+    private RequestQueue mRequestQueue;
+
+    private StringRequest stringRequest;
+
+    private String url = "http://data.goteborg.se/ParkingService/v2.1/PublicTollParkings/{00e0719c-23ce-4f32-badf-333a0e83fc9e}?latitude={57.707664}&longitude={11.938690}&radius={500}&format={JSON}";
+
 
 
     @Override
@@ -65,6 +83,26 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View view) {
                 Intent intent = new Intent(MainActivity.this, MapActivity.class);
                 startActivity(intent);
+
+            }
+        });
+
+        Button parkingList = (Button) findViewById(R.id.xmlButton);
+        parkingList.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                Intent intent = new Intent(MainActivity.this, Parking.class);
+                startActivity(intent);
+            }
+        });
+
+        btnSendRequest = (Button) findViewById(R.id.btnSendRequest);
+        btnSendRequest.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                SendRequestAndPrintResponse();
             }
         });
 
@@ -107,4 +145,25 @@ public class MainActivity extends AppCompatActivity {
         return false;
     }
 
-}
+    private void SendRequestAndPrintResponse() {
+
+        mRequestQueue = Volley.newRequestQueue(this);
+
+        stringRequest = new StringRequest(Request.Method.GET, url, new Response.Listener<String>() {
+            @Override
+            public void onResponse(String response) {
+
+                Log.i(TAG, "Response:" + response.toString());
+            }
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+
+                Log.i(TAG, error.toString());
+            }
+        });
+
+        mRequestQueue.add(stringRequest);
+
+        }
+    }
