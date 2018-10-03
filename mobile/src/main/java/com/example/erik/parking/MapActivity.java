@@ -11,6 +11,7 @@ import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.PopupMenu;
@@ -211,6 +212,27 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
                 break;
         }
         return true;
+    }
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu){
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.filter_menu, menu);
+        return true;
+    }
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item){
+        switch (item.getItemId()) {
+            case R.id.ltp:
+                if(item.isChecked()) {
+                    item.setChecked(false);
+                    mLHP.setVisible(false);
+                }
+                else{
+                    item.setChecked(true);
+                    mLHP.setVisible(true);
+                }
+        }
+        return  true;
     }
 
 
