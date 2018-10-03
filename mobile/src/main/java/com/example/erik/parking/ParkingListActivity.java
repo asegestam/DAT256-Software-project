@@ -134,6 +134,7 @@ public class ParkingListActivity extends AppCompatActivity {
 
             //Values in the XML records
             String name = "";
+            String point ="";
 
             Log.d(TAG, "processReceived: Starting to process the received data");
 
@@ -145,26 +146,30 @@ public class ParkingListActivity extends AppCompatActivity {
                     case XmlPullParser.START_TAG:
                         //Start of a record, so pull values encoded as attributes
                         if (tagName.equals("Name")) {
-                            //name += receivedData.getText();
+                            receivedData.next();
+                            name = receivedData.getText();
+                        }else if (tagName.equals("WKT")) {
+                            receivedData.next();
+                            point = receivedData.getText();
                         }
                         break;
 
                     case XmlResourceParser.TEXT:
-                        name += receivedData.getText() + "\n";
+                        // name += receivedData.getText() + "\n";
                         break;
 
                     case XmlPullParser.END_TAG:
-                        if (tagName.equals("Name")) {
+                        if (tagName.equals("PrivateParking")) {
                             recordsFound++;
-                            publishProgress(name);
+                            publishProgress(name, point);
                         }
                         break;
                 }
                 eventType = receivedData.next();
 
                 //Temp, remove so all data goes handled
-                if (recordsFound > 50)
-                    break;
+                //if (recordsFound > 50)
+                //  break;
             }
 
             if (recordsFound == 0) {
@@ -178,12 +183,11 @@ public class ParkingListActivity extends AppCompatActivity {
         protected void onProgressUpdate(String... values){
             if (values.length == 0)
                 Log.i(TAG, "onProgressUpdate: No data Downloaded");
-            if (values.length == 1) {
-                addContentToTextView(values[0]);
+            if (values.length == 2) {
+                addContentToTextView(values[0] + " " + values[1]);
             }
             super.onProgressUpdate(values);
         }
-
 
     }
 }
