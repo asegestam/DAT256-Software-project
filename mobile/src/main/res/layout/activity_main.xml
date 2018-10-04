@@ -65,4 +65,15 @@
         android:textColor="@color/white"
         android:fontFamily="@font/yantramanav_regular"/>
 
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Parking List"
+        android:background="@color/lightBlue"
+        android:textColor="@color/white"
+        android:layout_toRightOf="@id/btnMap"
+        android:layout_alignBaseline="@id/btnMap"
+        android:id="@+id/btnParkingList"
+        />
+
 </RelativeLayout>
