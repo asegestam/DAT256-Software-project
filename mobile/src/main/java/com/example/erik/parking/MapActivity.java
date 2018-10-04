@@ -68,7 +68,6 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
 
     protected void init() {
         ImageButton btn;
-
         btn = (ImageButton) findViewById(R.id.btnMarker);
         btn.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -77,6 +76,7 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
             }
         });
     }
+
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -288,35 +288,35 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
 
 
 
-        private static final String LATITUDE = "57.707664";
-        private static final String LONGITUDE = "11.938690";
-        private static final String RADIUS = "500";
+    private static final String LATITUDE = "57.707664";
+    private static final String LONGITUDE = "11.938690";
+    private static final String RADIUS = "500";
 
 
-        private static final String APP_ID = "00e0719c-23ce-4f32-badf-333a0e83fc9e";
-        private static final String SERVER_URL = "http://data.goteborg.se/ParkingService/v2.1/PrivateTollParkings/";
-        private static final String QUERY_OPTIONS = "{" + APP_ID + "}?latitude={" + LATITUDE + "}&longitude={" + LONGITUDE + "}&radius={" + RADIUS + "}";
-        private static final String QUERY_URL = SERVER_URL + QUERY_OPTIONS;
+    private static final String APP_ID = "00e0719c-23ce-4f32-badf-333a0e83fc9e";
+    private static final String SERVER_URL = "http://data.goteborg.se/ParkingService/v2.1/PrivateTollParkings/";
+    private static final String QUERY_OPTIONS = "{" + APP_ID + "}?latitude={" + LATITUDE + "}&longitude={" + LONGITUDE + "}&radius={" + RADIUS + "}";
+    private static final String QUERY_URL = SERVER_URL + QUERY_OPTIONS;
 
 
 
-        public void onClick_QueryServer(){
-            Log.d(TAG, "onClick_QueryServer: onClick_QueryServer() called");
-            AsyncDownloader downloader = new AsyncDownloader();
-            downloader.execute();
-        }
+    public void onClick_QueryServer(){
+        Log.d(TAG, "onClick_QueryServer: onClick_QueryServer() called");
+        AsyncDownloader downloader = new AsyncDownloader();
+        downloader.execute();
+    }
 
 
-        private void addMarkerToMap(Parking parking){
-            mLHP = mMap.addMarker(new MarkerOptions().
-                    position(parking.getPosition()).
+    private void addMarkerToMap(Parking parking) {
+        mLHP = mMap.addMarker(new MarkerOptions().
+                position(parking.getPosition()).
                     title(parking.getName()).
                     snippet("Pris: " + parking.getCost() + "kr/h"));
-            mMap.setOnMarkerClickListener(this);
+        mMap.setOnMarkerClickListener(this);
         }
 
         //Inner class for doing background download
-        private class AsyncDownloader extends AsyncTask<Object, String, Integer> {
+    private class AsyncDownloader extends AsyncTask<Object, String, Integer> {
 
             @Override
             protected Integer doInBackground(Object... objects) {
