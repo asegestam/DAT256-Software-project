@@ -195,6 +195,7 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
         popup.inflate(R.menu.maptype_menu);
         popup.show();
     }
+    /**Changes the maptype depending on what the user clicked on*/
     @Override
     public boolean onMenuItemClick(MenuItem item) {
         switch (item.getItemId()) {
@@ -213,12 +214,14 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
         }
         return true;
     }
+    /** Creates a options menu on creation */
     @Override
     public boolean onCreateOptionsMenu(Menu menu){
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.filter_menu, menu);
         return true;
     }
+    /**Changes the visibility of markers depending on what filter was chosen */
     @Override
     public boolean onOptionsItemSelected(MenuItem item){
         switch (item.getItemId()) {
@@ -234,7 +237,6 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
         }
         return  true;
     }
-
 
     @Override
     public void onPointerCaptureChanged(boolean hasCapture) {
