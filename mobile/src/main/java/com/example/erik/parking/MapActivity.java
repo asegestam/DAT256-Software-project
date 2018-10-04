@@ -2,16 +2,21 @@ package com.example.erik.parking;
 
 import android.Manifest;
 import android.content.pm.PackageManager;
+import android.content.res.XmlResourceParser;
 import android.location.Location;
+import android.os.AsyncTask;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
 import android.os.Bundle;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
+import android.text.method.ScrollingMovementMethod;
 import android.util.Log;
-import android.view.Menu;
-import android.view.MenuItem;
+import android.view.View;
+import android.widget.Button;
+import android.widget.ImageButton;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -28,6 +33,13 @@ import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.tasks.Task;
 import com.google.android.gms.tasks.OnCompleteListener;
 
+import org.xmlpull.v1.XmlPullParser;
+import org.xmlpull.v1.XmlPullParserException;
+import org.xmlpull.v1.XmlPullParserFactory;
+
+import java.io.IOException;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.ArrayList;
 
 
@@ -50,12 +62,25 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
     private GoogleMap mMap;
     private FusedLocationProviderClient mFusedLocationProviderClient;
 
+    protected void init() {
+        ImageButton btn;
+
+        btn = (ImageButton) findViewById(R.id.btnMarker);
+        btn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                onClick_QueryServer();
+            }
+        });
+    }
+
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_maps);
 
         getLocationPermission();
+        init();
     }
 
     @Override
@@ -162,7 +187,7 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
         }
     }
 
-    
+
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         Log.d(TAG, "onRequestPermissionsResult: Checking the results of the permission requests");
@@ -179,7 +204,7 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
                     Log.d(TAG, "onRequestPermissionsResult: permission granted");
                     mLocationPermissionsGranted = true;
                     //All permissions are granted so we can initialize the map
-                    initMap(); 
+                    initMap();
                 }
             }
         }
@@ -224,5 +249,151 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
         }
         return true;
     }
+    //ParkingList starts here
 
+
+
+    private static final String LATITUDE = "57.707664";
+    private static final String LONGITUDE = "11.938690";
+    private static final String RADIUS = "500";
+    private static final String APP_ID = "00e0719c-23ce-4f32-badf-333a0e83fc9e";
+    private static final String SERVER_URL = "http://data.goteborg.se/ParkingService/v2.1/PrivateTollParkings/";
+    private static final String QUERY_OPTIONS = "{" + APP_ID + "}?latitude={" + LATITUDE + "}&longitude={" + LONGITUDE + "}&radius={" + RADIUS + "}";
+    private static final String QUERY_URL = SERVER_URL + QUERY_OPTIONS;
+
+
+
+        public void onClick_QueryServer(){
+            Log.d(TAG, "onClick_QueryServer: onClick_QueryServer() called");
+            AsyncDownloader downloader = new AsyncDownloader();
+            downloader.execute();
+        }
+
+
+        private void addMarkerToMap(Parking parking){
+            mLHP = mMap.addMarker(new MarkerOptions().
+                    position(parking.getPosition()).
+                    title(parking.getName()).
+                    snippet("Pris: " + parking.getCost() + "kr/h"));
+            mMap.setOnMarkerClickListener(this);
+        }
+
+        //Inner class for doing background download
+        private class AsyncDownloader extends AsyncTask<Object, String, Integer> {
+
+            @Override
+            protected Integer doInBackground(Object... objects) {
+                XmlPullParser receivedData = tryDownloadingXmlData();
+                int recordsFound = tryParsingXmlData(receivedData);
+                return recordsFound;
+            }
+
+            private XmlPullParser tryDownloadingXmlData() {
+                try {
+                    Log.i(TAG, "tryDownloadingXmlData: Trying to download");
+                    URL xmlUrl = new URL(QUERY_URL);
+                    XmlPullParser receivedData = XmlPullParserFactory.newInstance().newPullParser();
+                    receivedData.setInput(xmlUrl.openStream(), null);
+                    return receivedData;
+
+                } catch (XmlPullParserException e) {
+                    Log.e(TAG, "tryDownloadingXmlData: XmlPullParserException: ", e);
+                } catch (MalformedURLException e) {
+                    Log.e(TAG, "tryDownloadingXmlData: MalformedURLException: ", e);
+                } catch (IOException e) {
+                    Log.e(TAG, "tryDownloadingXmlData: IOException: ", e);
+                }
+
+                return null;
+
+            }
+
+            private int tryParsingXmlData(XmlPullParser receivedData) {
+                Log.d(TAG, "tryParsingXmlData: Trying to parse the xml");
+                if (receivedData != null) {
+                    try {
+                        return processReceived(receivedData);
+                    } catch (XmlPullParserException e) {
+                        Log.e(TAG, "tryParsingXmlData: Pull Parser failure", e);
+                    } catch (IOException e) {
+                        Log.e(TAG, "tryParsingXmlData: IO Exception parsing XML", e);
+                    }
+                }
+
+                return -1;
+            }
+
+            private int processReceived(XmlPullParser receivedData) throws IOException, XmlPullParserException {
+
+                int recordsFound = 0;
+
+                //Values in the XML records
+                String name = "";
+                String lat = "";
+                String lng = "";
+                String cost = "";
+
+                Log.d(TAG, "processReceived: Starting to process the received data");
+
+                int eventType = -1;
+                while(eventType != XmlPullParser.END_DOCUMENT) {
+                    String tagName = receivedData.getName();
+
+                    switch (eventType) {
+                        case XmlPullParser.START_TAG:
+                            //Start of a record, so pull values encoded as attributes
+                            if (tagName.equals("Name")) {
+                                receivedData.next();
+                                name = receivedData.getText();
+                            }else if (tagName.equals("Lat")) {
+                                receivedData.next();
+                                lat = receivedData.getText();
+                            }else if(tagName.equals("Long")) {
+                                receivedData.next();
+                                lng = receivedData.getText();
+                            }else if(tagName.equals("CurrentParkingCost")) {
+                                receivedData.next();
+                                cost = receivedData.getText();
+                            }
+                            break;
+
+                        case XmlResourceParser.TEXT:
+                            // name += receivedData.getText() + "\n";
+                            break;
+
+                        case XmlPullParser.END_TAG:
+                            if (tagName.equals("PrivateParking")) {
+                                recordsFound++;
+                                publishProgress(name, lat, lng, cost);
+                            }
+                            break;
+                    }
+                    eventType = receivedData.next();
+
+                    //Temp, remove so all data goes handled
+                    //if (recordsFound > 50)
+                    //  break;
+                }
+
+                if (recordsFound == 0) {
+                    publishProgress();
+                }
+                Log.d(TAG, "processReceived: Finnished proccesing data, processed: " + recordsFound + " records.");
+                return recordsFound;
+            }
+
+            @Override
+            protected void onProgressUpdate(String... values){
+                if (values.length == 0)
+                    Log.i(TAG, "onProgressUpdate: No data Downloaded");
+                if (values.length == 4) {
+                    //addContentToTextView(values[0] + " " + values[1]  + " " + values[2]  + " " + values[3]);
+                    addMarkerToMap(new Parking(values[0], Double.parseDouble(values[1]), Double.parseDouble(values[2]), Double.parseDouble(values[3])));
+                }
+
+                super.onProgressUpdate(values);
+            }
+
+        }
+>>>>>>> markus
 }
