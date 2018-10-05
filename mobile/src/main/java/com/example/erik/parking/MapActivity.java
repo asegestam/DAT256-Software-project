@@ -66,6 +66,10 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
     private GoogleMap mMap;
     private FusedLocationProviderClient mFusedLocationProviderClient;
 
+    private MarkerOptions options = new MarkerOptions();
+    private ArrayList<Parking> parkings = new ArrayList<>();
+    private ArrayList<Marker> markers = new ArrayList<>();
+
     protected void init() {
         ImageButton btn;
         btn = (ImageButton) findViewById(R.id.btnMarker);
@@ -144,8 +148,9 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
                         if (task.isSuccessful()) {
                             Log.d(TAG, "onComplete: Found the location of the device");
                             Location location = (Location) task.getResult();
-
-                            moveCamera(new LatLng(location.getLatitude(), location.getLongitude()), DEFAULT_ZOOM);
+                            if(location != null){
+                                moveCamera(new LatLng(location.getLatitude(), location.getLongitude()), DEFAULT_ZOOM);
+                            }
 
                         } else {
                             Log.d(TAG, "onComplete: Device location is unknown/null ");
@@ -267,15 +272,29 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
     public boolean onOptionsItemSelected(MenuItem item){
         switch (item.getItemId()) {
             case R.id.ltp:
-                if(item.isChecked()) {
+                if (item.isChecked()) {
                     item.setChecked(false);
                     mLHP.setVisible(false);
-                }
-                else{
+                } else {
                     item.setChecked(true);
                     mLHP.setVisible(true);
                 }
+                break;
+            case R.id.ktp:
+                if (item.isChecked()) {
+                    item.setChecked(false);
+                    for (Marker marker : markers) {
+                        marker.setVisible(false);
+                    }
+                } else {
+                    item.setChecked(true);
+                    for (Marker marker : markers) {
+                        marker.setVisible(true);
+                    }
+                }
+                break;
         }
+
         return  true;
     }
 
@@ -306,14 +325,22 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
         downloader.execute();
     }
 
-
-    private void addMarkerToMap(Parking parking) {
-        mLHP = mMap.addMarker(new MarkerOptions().
-                position(parking.getPosition()).
-                    title(parking.getName()).
-                    snippet("Pris: " + parking.getCost() + "kr/h"));
-        mMap.setOnMarkerClickListener(this);
+    /** Adds a parking object to a ArrayList
+     * If the parking spot is added to the map -
+     * create a marker and add it to the map
+     * add the marker to a ArrayList for control of markers
+     * */
+    private void addMarkerToMap(Parking park) {
+        parkings.add(park);
+        for(Parking parking:parkings){
+            if(parking.getAdded() == false){
+                Marker marker = mMap.addMarker(new MarkerOptions().
+                        position(parking.getPosition()).title(parking.getName()));
+                parking.setAdded(true);
+                markers.add(marker);
+            }
         }
+    }
 
         //Inner class for doing background download
     private class AsyncDownloader extends AsyncTask<Object, String, Integer> {
@@ -425,11 +452,10 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
                     Log.i(TAG, "onProgressUpdate: No data Downloaded");
                 if (values.length == 4) {
                     //addContentToTextView(values[0] + " " + values[1]  + " " + values[2]  + " " + values[3]);
-                    addMarkerToMap(new Parking(values[0], Double.parseDouble(values[1]), Double.parseDouble(values[2]), Double.parseDouble(values[3])));
+                    addMarkerToMap(new Parking(values[0], Double.parseDouble(values[1]), Double.parseDouble(values[2]), Double.parseDouble(values[3]), false));
                 }
 
                 super.onProgressUpdate(values);
             }
-
         }
 }
