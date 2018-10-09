@@ -4,6 +4,7 @@ import android.Manifest;
 import android.content.pm.PackageManager;
 import android.content.res.XmlResourceParser;
 import android.location.Location;
+import android.media.Image;
 import android.os.AsyncTask;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -20,6 +21,7 @@ import android.view.View;
 import android.widget.PopupMenu;
 import android.widget.Button;
 import android.widget.ImageButton;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -47,7 +49,7 @@ import java.net.URL;
 import java.util.ArrayList;
 
 
-public class MapActivity extends AppCompatActivity implements OnMapReadyCallback, GoogleMap.OnMarkerClickListener, PopupMenu.OnMenuItemClickListener {
+public class MapActivity extends AppCompatActivity implements OnMapReadyCallback,GoogleMap.OnMapClickListener, GoogleMap.OnMarkerClickListener, PopupMenu.OnMenuItemClickListener {
 
     private static final String TAG = "MapActivity";
 
@@ -59,14 +61,12 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
     //Statiska Positioner
     private static final LatLng LindholmenParkering = new LatLng(57.707664, 11.938690);
     private Marker mLHP;
+    private Marker lastClicked;
 
-    private ArrayList<LatLng> pPositions;
 
     private Boolean mLocationPermissionsGranted = false;
     private GoogleMap mMap;
     private FusedLocationProviderClient mFusedLocationProviderClient;
-
-    private MarkerOptions options = new MarkerOptions();
     private ArrayList<Parking> parkings = new ArrayList<>();
     private ArrayList<Marker> markers = new ArrayList<>();
 
@@ -102,7 +102,6 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
         //Check if it is ok to get device location
         if (mLocationPermissionsGranted) {
             getDeviceLocation();
-            showParkings(mMap);
 
             if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED
                     && ActivityCompat.checkSelfPermission(this,
@@ -117,6 +116,8 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
                 return;
             }
             mMap.setMyLocationEnabled(true);
+            mMap.setOnMarkerClickListener(this);
+            mMap.setOnMapClickListener(this);
 
         }
     }
@@ -218,21 +219,34 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
             }
         }
     }
-    /** Adds a static position for a parkingplace */
-    public void showParkings(GoogleMap mMap){
-        mLHP = mMap.addMarker(new MarkerOptions().
-                position(LindholmenParkering).
-                title("Lindholmsallén Parkering").
-                snippet("Här kan man visa information om parkeringen"));
-        mMap.setOnMarkerClickListener(this);
+    /**Called when a user clicks on the map */
+    @Override
+    public void onMapClick(LatLng latlng) {
+        //if there is a last clicked marker, set it to default color red
+        if(lastClicked != null){
+            lastClicked.setIcon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED));
+        }
+        //if the favorite button is visible, set it to gone
+        if((findViewById(R.id.favorite_btn)).getVisibility() == View.VISIBLE){
+            (findViewById(R.id.favorite_btn)).setVisibility(View.GONE);
+        }
     }
     /** Called when a user clicks on the marker */
     @Override
     public boolean onMarkerClick(Marker marker) {
-        //Sets the color of the clicked marker to azure blue
+        //if there was a lastClicked marker, set it to default color red
+        if(lastClicked != null){
+            lastClicked.setIcon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED));
+        }
+        //change the clicked marker to blue
         marker.setIcon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_AZURE));
+        lastClicked = marker;
+        (findViewById(R.id.favorite_btn)).setVisibility(View.VISIBLE);
+
         return false;
     }
+
+    /**Shows a popup menu when called with map type switching functionality*/
     public void showPopup(View v) {
         PopupMenu popup = new PopupMenu(this, v);
 
@@ -241,6 +255,7 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
         popup.inflate(R.menu.maptype_menu);
         popup.show();
     }
+
     /**Changes the maptype depending on what the user clicked on*/
     @Override
     public boolean onMenuItemClick(MenuItem item) {
@@ -260,6 +275,7 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
         }
         return true;
     }
+
     /** Creates a options menu on creation */
     @Override
     public boolean onCreateOptionsMenu(Menu menu){
@@ -267,6 +283,7 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
         inflater.inflate(R.menu.filter_menu, menu);
         return true;
     }
+
     /**Changes the visibility of markers depending on what filter was chosen */
     @Override
     public boolean onOptionsItemSelected(MenuItem item){
@@ -296,6 +313,9 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
         }
 
         return  true;
+    }
+
+    public void addMarkerToFavorite(){
     }
 
     @Override
@@ -342,7 +362,7 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
         }
     }
 
-        //Inner class for doing background download
+    //Inner class for doing background download
     private class AsyncDownloader extends AsyncTask<Object, String, Integer> {
 
             @Override
