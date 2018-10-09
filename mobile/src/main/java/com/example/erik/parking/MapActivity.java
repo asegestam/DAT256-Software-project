@@ -101,8 +101,10 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
                         {
                             menuItem.setChecked(true);
                             onClick_QueryServer();
+                            menuItem.setIcon(R.drawable.ic_check_box_true);
                         }else{
                             menuItem.setChecked(false);
+                            menuItem.setIcon(R.drawable.ic_check_box_false);
                             //Skit som tar bort markers för menuItem
                         }
                         // close drawer when item is tapped

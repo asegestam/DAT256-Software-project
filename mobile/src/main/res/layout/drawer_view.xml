@@ -1,21 +1,21 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android"  android:layout_height="match_parent" android:layout_width="match_parent">
-    <group android:checkableBehavior="all">
+    <group android:checkableBehavior="none">
         <item
             android:id="@+id/nav_camera"
-            android:icon="@drawable/parking_symbol"
-            android:title="Åke"/>
+            android:icon="@drawable/ic_check_box_false"
+            android:title="Parkeringar" />
         <item
             android:id="@+id/nav_gallery"
-            android:icon="@drawable/parking_symbol"
+            android:icon="@drawable/ic_check_box_false"
             android:title="Är" />
         <item
             android:id="@+id/nav_slideshow"
-            android:icon="@drawable/parking_symbol"
+            android:icon="@drawable/ic_check_box_false"
             android:title="En" />
         <item
             android:id="@+id/nav_manage"
-            android:icon="@drawable/parking_symbol"
+            android:icon="@drawable/ic_check_box_false"
             android:title="Potatis" />
     </group>
 </menu>
