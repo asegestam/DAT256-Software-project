@@ -4,7 +4,6 @@ import android.Manifest;
 import android.content.pm.PackageManager;
 import android.content.res.XmlResourceParser;
 import android.location.Location;
-import android.media.Image;
 import android.os.AsyncTask;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -12,17 +11,13 @@ import android.support.v4.app.ActivityCompat;
 import android.os.Bundle;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
-import android.text.method.ScrollingMovementMethod;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.PopupMenu;
-import android.widget.Button;
 import android.widget.ImageButton;
-import android.widget.RelativeLayout;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -50,7 +45,7 @@ import java.util.ArrayList;
 
 
 public class MapActivity extends AppCompatActivity implements OnMapReadyCallback,GoogleMap.OnMapClickListener, GoogleMap.OnMarkerClickListener, PopupMenu.OnMenuItemClickListener {
-
+    /** Static declarations */
     private static final String TAG = "MapActivity";
 
     private static final String FINE_LOCATION = Manifest.permission.ACCESS_FINE_LOCATION;
@@ -58,21 +53,19 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
     private static final int LOCATION_PERMISSION_REQUEST_CODE = 1234;
     private static final float DEFAULT_ZOOM = 15f;
 
-    //Statiska Positioner
-    private static final LatLng LindholmenParkering = new LatLng(57.707664, 11.938690);
-    private Marker mLHP;
     private Marker lastClicked;
-
 
     private Boolean mLocationPermissionsGranted = false;
     private GoogleMap mMap;
     private FusedLocationProviderClient mFusedLocationProviderClient;
+
     private ArrayList<Parking> parkings = new ArrayList<>();
     private ArrayList<Marker> markers = new ArrayList<>();
+    private ArrayList<Marker> favorites = new ArrayList<>();
 
     protected void init() {
         ImageButton btn;
-        btn = (ImageButton) findViewById(R.id.btnMarker);
+        btn = findViewById(R.id.btnMarker);
         btn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -291,10 +284,9 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
             case R.id.ltp:
                 if (item.isChecked()) {
                     item.setChecked(false);
-                    mLHP.setVisible(false);
+                    //TODO gå igenom listan för visibility här för varje meny val
                 } else {
                     item.setChecked(true);
-                    mLHP.setVisible(true);
                 }
                 break;
             case R.id.ktp:
@@ -314,8 +306,12 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
 
         return  true;
     }
-
-    public void addMarkerToFavorite(){
+    /** Adds the last clicked marker (i.e currently selected marker) to favorites */
+    public void addMarkerToFavorite(View v){
+        if(!favorites.contains(lastClicked)){
+            favorites.add(lastClicked);
+        }
+        Log.d(TAG, "items in favorites: " + favorites.size());
     }
 
     @Override
