@@ -73,10 +73,7 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
 
     protected void init() {
 
-        AsyncDownloader downloader = new AsyncDownloader();
-        downloader.execute();
-
-        /*ImageButton btn;
+        ImageButton btn;
 
         btn = (ImageButton) findViewById(R.id.btnMarker);
         btn.setOnClickListener(new View.OnClickListener() {
@@ -84,7 +81,7 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
             public void onClick(View v) {
                 onClick_QueryServer();
             }
-        });*/
+        });
     }
 
     @Override
@@ -100,9 +97,16 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
                     @Override
                     public boolean onNavigationItemSelected(MenuItem menuItem) {
                         // set item as selected to persist highlight
-                        menuItem.setChecked(true);
+                        if (!menuItem.isChecked())
+                        {
+                            menuItem.setChecked(true);
+                            onClick_QueryServer();
+                        }else{
+                            menuItem.setChecked(false);
+                            //Skit som tar bort markers för menuItem
+                        }
                         // close drawer when item is tapped
-                        mDrawerLayout.closeDrawers();
+                        //mDrawerLayout.closeDrawers();
 
                         // Add code here to update the UI based on the item selected
                         // For example, swap UI fragments here

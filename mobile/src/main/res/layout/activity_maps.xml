@@ -28,6 +28,11 @@
             android:id="@+id/map"
             tools:context=".MapActivity"
             android:name="com.google.android.gms.maps.SupportMapFragment" />
+
+        <ImageButton
+            android:id="@+id/btnMarker"
+            android:layout_width="60dp"
+            android:layout_height="60dp" />
     </FrameLayout>
 
     <!-- Container for contents of drawer - use NavigationView to make configuration easier -->
@@ -39,5 +44,7 @@
         android:fitsSystemWindows="true"
         app:menu="@layout/drawer_view"
         />
+
+
 
 </android.support.v4.widget.DrawerLayout>
