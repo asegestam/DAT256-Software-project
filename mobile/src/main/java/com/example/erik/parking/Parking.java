@@ -8,11 +8,13 @@ public class Parking {
     private LatLng position;
     private String name;
     private double cost;
+    private boolean isAdded;
 
-    public Parking(String name, double lat, double lng, double cost){
+    public Parking(String name, double lat, double lng, double cost, boolean isAdded){
         this.name = name;
         position = new LatLng(lat, lng);
         this.cost = cost;
+        this.isAdded = isAdded;
     }
 
     public String getName() {
@@ -37,6 +39,13 @@ public class Parking {
 
     public void setCost(double cost) {
         this.cost = cost;
+    }
+
+    public boolean getAdded(){
+        return isAdded;
+    }
+    public void setAdded(boolean state){
+        this.isAdded = state;
     }
 
 }

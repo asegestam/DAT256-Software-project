@@ -11,12 +11,13 @@ import android.support.v4.app.ActivityCompat;
 import android.os.Bundle;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
-import android.text.method.ScrollingMovementMethod;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
-import android.widget.Button;
+import android.widget.PopupMenu;
 import android.widget.ImageButton;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -43,8 +44,8 @@ import java.net.URL;
 import java.util.ArrayList;
 
 
-public class MapActivity extends AppCompatActivity implements OnMapReadyCallback, GoogleMap.OnMarkerClickListener {
-
+public class MapActivity extends AppCompatActivity implements OnMapReadyCallback,GoogleMap.OnMapClickListener, GoogleMap.OnMarkerClickListener, PopupMenu.OnMenuItemClickListener {
+    /** Static declarations */
     private static final String TAG = "MapActivity";
 
     private static final String FINE_LOCATION = Manifest.permission.ACCESS_FINE_LOCATION;
@@ -52,20 +53,19 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
     private static final int LOCATION_PERMISSION_REQUEST_CODE = 1234;
     private static final float DEFAULT_ZOOM = 15f;
 
-    //Statiska Positioner
-    private static final LatLng LindholmenParkering = new LatLng(57.707664, 11.938690);
-    private Marker mLHP;
-
-    private ArrayList<LatLng> pPositions;
+    private Marker lastClicked;
 
     private Boolean mLocationPermissionsGranted = false;
     private GoogleMap mMap;
     private FusedLocationProviderClient mFusedLocationProviderClient;
 
+    private ArrayList<Parking> parkings = new ArrayList<>();
+    private ArrayList<Marker> markers = new ArrayList<>();
+    private ArrayList<Marker> favorites = new ArrayList<>();
+
     protected void init() {
         ImageButton btn;
-
-        btn = (ImageButton) findViewById(R.id.btnMarker);
+        btn = findViewById(R.id.btnMarker);
         btn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -73,6 +73,7 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
             }
         });
     }
+
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -94,7 +95,6 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
         //Check if it is ok to get device location
         if (mLocationPermissionsGranted) {
             getDeviceLocation();
-            showParkings(mMap);
 
             if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED
                     && ActivityCompat.checkSelfPermission(this,
@@ -109,6 +109,8 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
                 return;
             }
             mMap.setMyLocationEnabled(true);
+            mMap.setOnMarkerClickListener(this);
+            mMap.setOnMapClickListener(this);
 
         }
     }
@@ -140,8 +142,9 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
                         if (task.isSuccessful()) {
                             Log.d(TAG, "onComplete: Found the location of the device");
                             Location location = (Location) task.getResult();
-
-                            moveCamera(new LatLng(location.getLatitude(), location.getLongitude()), DEFAULT_ZOOM);
+                            if(location != null){
+                                moveCamera(new LatLng(location.getLatitude(), location.getLongitude()), DEFAULT_ZOOM);
+                            }
 
                         } else {
                             Log.d(TAG, "onComplete: Device location is unknown/null ");
@@ -209,30 +212,46 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
             }
         }
     }
-    /** Adds a static position for a parkingplace */
-    public void showParkings(GoogleMap mMap){
-        mLHP = mMap.addMarker(new MarkerOptions().
-                position(LindholmenParkering).
-                title("Lindholmsallén Parkering").
-                snippet("Här kan man visa information om parkeringen"));
-        mMap.setOnMarkerClickListener(this);
+    /**Called when a user clicks on the map */
+    @Override
+    public void onMapClick(LatLng latlng) {
+        //if there is a last clicked marker, set it to default color red
+        if(lastClicked != null){
+            lastClicked.setIcon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED));
+        }
+        //if the favorite button is visible, set it to gone
+        if((findViewById(R.id.favorite_btn)).getVisibility() == View.VISIBLE){
+            (findViewById(R.id.favorite_btn)).setVisibility(View.GONE);
+        }
     }
     /** Called when a user clicks on the marker */
     @Override
     public boolean onMarkerClick(Marker marker) {
-        //Sets the color of the clicked marker to azure blue
+        //if there was a lastClicked marker, set it to default color red
+        if(lastClicked != null){
+            lastClicked.setIcon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED));
+        }
+        //change the clicked marker to blue
         marker.setIcon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_AZURE));
+        lastClicked = marker;
+        (findViewById(R.id.favorite_btn)).setVisibility(View.VISIBLE);
+
         return false;
     }
-    /**Creates a option menu to choose map type*/
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.maptype_menu, menu);
-        return true;
+
+    /**Shows a popup menu when called with map type switching functionality*/
+    public void showPopup(View v) {
+        PopupMenu popup = new PopupMenu(this, v);
+
+        // This activity implements OnMenuItemClickListener
+        popup.setOnMenuItemClickListener(this);
+        popup.inflate(R.menu.maptype_menu);
+        popup.show();
     }
-    /** Sets map type depending on what option was selected */
+
+    /**Changes the maptype depending on what the user clicked on*/
     @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
+    public boolean onMenuItemClick(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.maptype_normal:
                 mMap.setMapType(GoogleMap.MAP_TYPE_NORMAL);
@@ -249,6 +268,19 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
         }
         return true;
     }
+    /** Adds the last clicked marker (i.e currently selected marker) to favorites */
+    public void addMarkerToFavorite(View v){
+        if(!favorites.contains(lastClicked)){
+            favorites.add(lastClicked);
+        }
+        Log.d(TAG, "items in favorites: " + favorites.size());
+    }
+
+    @Override
+    public void onPointerCaptureChanged(boolean hasCapture) {
+
+    }
+
     //ParkingList starts here
 
 
@@ -256,6 +288,8 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
     private static final String LATITUDE = "57.707664";
     private static final String LONGITUDE = "11.938690";
     private static final String RADIUS = "500";
+
+
     private static final String APP_ID = "00e0719c-23ce-4f32-badf-333a0e83fc9e";
     private static final String SERVER_URL = "http://data.goteborg.se/ParkingService/v2.1/PrivateTollParkings/";
     private static final String QUERY_OPTIONS = "{" + APP_ID + "}?latitude={" + LATITUDE + "}&longitude={" + LONGITUDE + "}&radius={" + RADIUS + "}";
@@ -263,23 +297,31 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
 
 
 
-        public void onClick_QueryServer(){
-            Log.d(TAG, "onClick_QueryServer: onClick_QueryServer() called");
-            AsyncDownloader downloader = new AsyncDownloader();
-            downloader.execute();
+    public void onClick_QueryServer(){
+        Log.d(TAG, "onClick_QueryServer: onClick_QueryServer() called");
+        AsyncDownloader downloader = new AsyncDownloader();
+        downloader.execute();
+    }
+
+    /** Adds a parking object to a ArrayList
+     * If the parking spot is added to the map -
+     * create a marker and add it to the map
+     * add the marker to a ArrayList for control of markers
+     * */
+    private void addMarkerToMap(Parking park) {
+        parkings.add(park);
+        for(Parking parking:parkings){
+            if(parking.getAdded() == false){
+                Marker marker = mMap.addMarker(new MarkerOptions().
+                        position(parking.getPosition()).title(parking.getName()));
+                parking.setAdded(true);
+                markers.add(marker);
+            }
         }
+    }
 
-
-        private void addMarkerToMap(Parking parking){
-            mLHP = mMap.addMarker(new MarkerOptions().
-                    position(parking.getPosition()).
-                    title(parking.getName()).
-                    snippet("Pris: " + parking.getCost() + "kr/h"));
-            mMap.setOnMarkerClickListener(this);
-        }
-
-        //Inner class for doing background download
-        private class AsyncDownloader extends AsyncTask<Object, String, Integer> {
+    //Inner class for doing background download
+    private class AsyncDownloader extends AsyncTask<Object, String, Integer> {
 
             @Override
             protected Integer doInBackground(Object... objects) {
@@ -388,12 +430,10 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
                     Log.i(TAG, "onProgressUpdate: No data Downloaded");
                 if (values.length == 4) {
                     //addContentToTextView(values[0] + " " + values[1]  + " " + values[2]  + " " + values[3]);
-                    addMarkerToMap(new Parking(values[0], Double.parseDouble(values[1]), Double.parseDouble(values[2]), Double.parseDouble(values[3])));
+                    addMarkerToMap(new Parking(values[0], Double.parseDouble(values[1]), Double.parseDouble(values[2]), Double.parseDouble(values[3]), false));
                 }
 
                 super.onProgressUpdate(values);
             }
-
-        }
->>>>>>> markus
+          }
 }
