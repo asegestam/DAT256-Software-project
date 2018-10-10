@@ -47,10 +47,10 @@
         android:layout_marginStart="11dp"
         android:layout_marginTop="100dp"
         android:background="@null"
+        android:onClick="addMarkerToFavorite"
         android:src="@drawable/ic_star_black_24dp"
         android:tint="@color/colorAccent"
-        android:visibility="gone"
-        android:onClick="addMarkerToFavorite" />
+        android:visibility="gone" />
 
 
 </RelativeLayout>

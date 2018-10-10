@@ -235,6 +235,12 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
         marker.setIcon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_AZURE));
         lastClicked = marker;
         (findViewById(R.id.favorite_btn)).setVisibility(View.VISIBLE);
+        if(!favorites.contains(lastClicked)){
+            ((ImageButton)findViewById(R.id.favorite_btn)).setImageResource(R.drawable.ic_star_border_black_24dp);
+        }
+        else{
+            ((ImageButton)findViewById(R.id.favorite_btn)).setImageResource(R.drawable.ic_star_black_24dp);
+        }
 
         return false;
     }
@@ -310,6 +316,11 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
     public void addMarkerToFavorite(View v){
         if(!favorites.contains(lastClicked)){
             favorites.add(lastClicked);
+            ((ImageButton)findViewById(R.id.favorite_btn)).setImageResource(R.drawable.ic_star_black_24dp);
+        }
+        else{
+            favorites.remove(lastClicked);
+            ((ImageButton)findViewById(R.id.favorite_btn)).setImageResource(R.drawable.ic_star_border_black_24dp);
         }
         Log.d(TAG, "items in favorites: " + favorites.size());
     }
