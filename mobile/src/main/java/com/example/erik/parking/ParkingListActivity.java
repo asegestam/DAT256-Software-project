@@ -201,7 +201,7 @@ public class ParkingListActivity extends AppCompatActivity {
                 Log.i(TAG, "onProgressUpdate: No data Downloaded");
             if (values.length == 4) {
                 addContentToTextView(values[0] + " " + values[1]  + " " + values[2]  + " " + values[3]);
-                addMarkerToMap(new Parking(values[0], Double.parseDouble(values[1]), Double.parseDouble(values[2]), values[3], "5"));
+                addMarkerToMap(new Parking(values[0], Double.parseDouble(values[1]), Double.parseDouble(values[2]), Double.parseDouble(values[3]), false));
             }
 
             super.onProgressUpdate(values);
