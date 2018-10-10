@@ -69,7 +69,6 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
     private Marker lastClicked;
     private Boolean mLocationPermissionsGranted = false;
     private GoogleMap mMap;
-    private FusedLocationProviderClient mFusedLocationProviderClient;
 
     private ArrayList<Parking> parkings = new ArrayList<>();
     private ArrayList<Marker> markers = new ArrayList<>();
@@ -79,7 +78,7 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
 
         ImageButton btn;
 
-        btn = (ImageButton) findViewById(R.id.btnMarker);
+        btn = findViewById(R.id.btnMarker);
         btn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -99,7 +98,7 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
         navigationView.setNavigationItemSelectedListener(
                 new NavigationView.OnNavigationItemSelectedListener() {
                     @Override
-                    public boolean onNavigationItemSelected(MenuItem menuItem) {
+                    public boolean onNavigationItemSelected(@NonNull MenuItem menuItem) {
                         // set item as selected to persist highlight
                         if (!menuItem.isChecked())
                         {
@@ -124,6 +123,7 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
         android.support.v7.widget.Toolbar toolbar =  findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         android.support.v7.app.ActionBar actionBar = getSupportActionBar();
+        assert actionBar != null;
         actionBar.setDisplayHomeAsUpEnabled(true);
         actionBar.setHomeAsUpIndicator(R.drawable.ic_menu);
 
@@ -168,6 +168,7 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
 
+        assert mapFragment != null;
         mapFragment.getMapAsync(MapActivity.this);
     }
 
@@ -176,7 +177,7 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
         Log.d(TAG, "getDeviceLocation: Getting the current location of this device");
 
         //Objekt to be used to get the location of the user
-        mFusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this);
+        FusedLocationProviderClient mFusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this);
 
         try {
             //check the location permission
@@ -222,6 +223,7 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
                 Manifest.permission.ACCESS_COARSE_LOCATION};
 
         //Check the permissions fine_location and coarse_location from the user
+        //Ask for the coarse_location permission because it was not already granted
         if (ContextCompat.checkSelfPermission(this.getApplicationContext(), FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
             if (ContextCompat.checkSelfPermission(this.getApplicationContext(), COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
                 mLocationPermissionsGranted = true;
@@ -231,10 +233,8 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
                 //Ask for the fine_location permission because it was not already granted
                 ActivityCompat.requestPermissions(this, permissions, LOCATION_PERMISSION_REQUEST_CODE);
             }
-        } else {
-            //Ask for the coarse_location permission because it was not already granted
+        } else
             ActivityCompat.requestPermissions(this, permissions, LOCATION_PERMISSION_REQUEST_CODE);
-        }
     }
 
 
@@ -244,8 +244,8 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
         switch (requestCode) {
             case LOCATION_PERMISSION_REQUEST_CODE: {
                 if (grantResults.length > 0) {
-                    for(int i = 0; i < grantResults.length; i++) {
-                        if (grantResults[i] != PackageManager.PERMISSION_GRANTED) {
+                    for (int grantResult : grantResults) {
+                        if (grantResult != PackageManager.PERMISSION_GRANTED) {
                             Log.d(TAG, "onRequestPermissionsResult: permission failed");
                             mLocationPermissionsGranted = false;
                             return;
@@ -398,15 +398,13 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
         }
         return super.onOptionsItemSelected(item);
     }
-
-    //Inner class for doing background download
+   //Inner class for doing background download
     private class AsyncDownloader extends AsyncTask<Object, String, Integer> {
 
         @Override
         protected Integer doInBackground(Object... objects) {
             XmlPullParser receivedData = tryDownloadingXmlData();
-            int recordsFound = tryParsingXmlData(receivedData);
-            return recordsFound;
+            return tryParsingXmlData(receivedData);
         }
 
         private XmlPullParser tryDownloadingXmlData() {
@@ -464,22 +462,24 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
                 switch (eventType) {
                     case XmlPullParser.START_TAG:
                         //Start of a record, so pull values encoded as attributes
-                        if (tagName.equals("Name")) {
-                            receivedData.next();
-                            name = receivedData.getText();
-                        }else if (tagName.equals("Lat")) {
-                            receivedData.next();
-                            lat = receivedData.getText();
-                        }else if(tagName.equals("Long")) {
-                            receivedData.next();
-                            lng = receivedData.getText();
-                        }else if(tagName.equals("CurrentParkingCost")) {
-                            receivedData.next();
-                            cost = receivedData.getText();
-                        }/*else if(tagName.equals("time")){
-                            receivedData.nextTag();
-                            time = receivedData.getText();
-                        }*/
+                        switch (tagName) {
+                            case "Name":
+                                receivedData.next();
+                                name = receivedData.getText();
+                                break;
+                            case "Lat":
+                                receivedData.next();
+                                lat = receivedData.getText();
+                                break;
+                            case "Long":
+                                receivedData.next();
+                                lng = receivedData.getText();
+                                break;
+                            case "CurrentParkingCost":
+                                receivedData.next();
+                                cost = receivedData.getText();
+                                break;
+                        }
                         break;
 
                     case XmlResourceParser.TEXT:
