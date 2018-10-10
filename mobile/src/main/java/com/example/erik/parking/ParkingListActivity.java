@@ -11,10 +11,6 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 
-import com.google.android.gms.maps.GoogleMap;
-import com.google.android.gms.maps.model.Marker;
-import com.google.android.gms.maps.model.MarkerOptions;
-
 import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserException;
 import org.xmlpull.v1.XmlPullParserFactory;
@@ -87,10 +83,6 @@ public class ParkingListActivity extends AppCompatActivity {
         textView.setText(textView.getText().toString() + theString + "\n");
     }
 
-    private void addMarkerToMap(Parking parking){
-
-    }
-
     //Inner class for doing background download
     private class AsyncDownloader extends AsyncTask<Object, String, Integer>{
 
@@ -142,9 +134,7 @@ public class ParkingListActivity extends AppCompatActivity {
 
             //Values in the XML records
             String name = "";
-            String lat = "";
-            String lng = "";
-            String cost = "";
+            String point ="";
 
             Log.d(TAG, "processReceived: Starting to process the received data");
 
@@ -158,15 +148,9 @@ public class ParkingListActivity extends AppCompatActivity {
                         if (tagName.equals("Name")) {
                             receivedData.next();
                             name = receivedData.getText();
-                        }else if (tagName.equals("Lat")) {
+                        }else if (tagName.equals("WKT")) {
                             receivedData.next();
-                            lat = receivedData.getText();
-                        }else if(tagName.equals("Long")) {
-                            receivedData.next();
-                            lng = receivedData.getText();
-                        }else if(tagName.equals("CurrentParkingCost")) {
-                            receivedData.next();
-                            cost = receivedData.getText();
+                            point = receivedData.getText();
                         }
                         break;
 
@@ -177,7 +161,7 @@ public class ParkingListActivity extends AppCompatActivity {
                     case XmlPullParser.END_TAG:
                         if (tagName.equals("PrivateParking")) {
                             recordsFound++;
-                            publishProgress(name, lat, lng, cost);
+                            publishProgress(name, point);
                         }
                         break;
                 }
@@ -199,11 +183,9 @@ public class ParkingListActivity extends AppCompatActivity {
         protected void onProgressUpdate(String... values){
             if (values.length == 0)
                 Log.i(TAG, "onProgressUpdate: No data Downloaded");
-            if (values.length == 4) {
-                addContentToTextView(values[0] + " " + values[1]  + " " + values[2]  + " " + values[3]);
-                addMarkerToMap(new Parking(values[0], Double.parseDouble(values[1]), Double.parseDouble(values[2]), Double.parseDouble(values[3]), false));
+            if (values.length == 2) {
+                addContentToTextView(values[0] + " " + values[1]);
             }
-
             super.onProgressUpdate(values);
         }
 
