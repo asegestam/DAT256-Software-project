@@ -4,7 +4,6 @@ import com.google.android.gms.maps.model.LatLng;
 
 public class Parking {
 
-<<<<<<< HEAD
     private LatLng position;
     public String parkingName;
     public String time;
@@ -25,34 +24,12 @@ public class Parking {
 
     public String getTime() {
         return time;
-=======
-    //Variabels
-    private LatLng position;
-    private String name;
-    private double cost;
-    private boolean isAdded;
-
-    public Parking(String name, double lat, double lng, double cost, boolean isAdded){
-        this.name = name;
-        position = new LatLng(lat, lng);
-        this.cost = cost;
-        this.isAdded = isAdded;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
->>>>>>> testing
     }
 
     public LatLng getPosition() {
         return position;
     }
 
-<<<<<<< HEAD
     public String getParkingName() {
         return parkingName;
     }
@@ -60,25 +37,4 @@ public class Parking {
 
 }
 
-=======
-    public void setPosition(LatLng position){
-        this.position = position;
-    }
 
-    public double getCost() {
-        return cost;
-    }
-
-    public void setCost(double cost) {
-        this.cost = cost;
-    }
-
-    public boolean getAdded(){
-        return isAdded;
-    }
-    public void setAdded(boolean state){
-        this.isAdded = state;
-    }
-
-}
->>>>>>> testing
