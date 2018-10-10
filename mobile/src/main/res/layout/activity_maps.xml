@@ -8,7 +8,7 @@
     android:fitsSystemWindows="true">
 
     <!-- Layout to contain contents of main body of screen (drawer will slide over this) -->
-    <FrameLayout
+    <RelativeLayout
         android:id="@+id/content_frame"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
@@ -35,8 +35,34 @@
             android:id="@+id/btnMarker"
             android:layout_width="0dp"
             android:layout_height="0dp" />
+        <ImageButton
+            android:layout_width="30dp"
+            android:layout_height="30dp"
+            android:layout_alignParentEnd="true"
+            android:layout_alignParentTop="true"
+            android:layout_marginEnd="15dp"
+            android:layout_marginTop="53dp"
+            android:background="@null"
+            android:onClick="showPopup"
+            android:scaleType="fitCenter"
+            android:src="@drawable/ic_terrain_black_24dp"
+            android:tint="@color/colorPrimary" />
 
-    </FrameLayout>
+        <ImageButton
+            android:id="@+id/favorite_btn"
+            android:layout_width="30dp"
+            android:layout_height="30dp"
+            android:layout_alignParentStart="true"
+            android:layout_alignParentTop="true"
+            android:layout_marginStart="5dp"
+            android:layout_marginTop="60dp"
+            android:background="@null"
+            android:onClick="addMarkerToFavorite"
+            android:src="@drawable/ic_star_black_24dp"
+            android:tint="#ffdf40"
+            android:visibility="gone" />
+
+    </RelativeLayout>
 
     <!-- Container for contents of drawer - use NavigationView to make configuration easier -->
     <android.support.design.widget.NavigationView
