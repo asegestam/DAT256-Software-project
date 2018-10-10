@@ -3,6 +3,7 @@
     <group android:checkableBehavior="none">
         <item
             android:id="@+id/nav_camera"
+
             android:icon="@drawable/ic_check_box_false"
             android:title="Parkeringar" />
         <item

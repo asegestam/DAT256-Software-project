@@ -13,12 +13,6 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
-        <android.support.v7.widget.Toolbar
-            android:id="@+id/toolbar"
-            android:layout_width="match_parent"
-            android:layout_height="?attr/actionBarSize"
-            android:background="?attr/colorPrimary"
-            android:theme="@style/ThemeOverlay.AppCompat.ActionBar" />
 
         <fragment
             xmlns:android="http://schemas.android.com/apk/res/android"
@@ -29,10 +23,19 @@
             tools:context=".MapActivity"
             android:name="com.google.android.gms.maps.SupportMapFragment" />
 
+        <android.support.v7.widget.Toolbar
+            android:id="@+id/toolbar"
+            android:layout_width="match_parent"
+            android:layout_height="?attr/actionBarSize"
+            android:background="?attr/colorPrimary"
+            android:theme="@style/ThemeOverlay.AppCompat.ActionBar" />
+
+
         <ImageButton
             android:id="@+id/btnMarker"
-            android:layout_width="60dp"
-            android:layout_height="60dp" />
+            android:layout_width="0dp"
+            android:layout_height="0dp" />
+
     </FrameLayout>
 
     <!-- Container for contents of drawer - use NavigationView to make configuration easier -->
@@ -40,6 +43,8 @@
         android:id="@+id/nav_view"
         android:layout_width="wrap_content"
         android:layout_height="match_parent"
+        app:itemIconTint="@color/drawer_color"
+        app:itemTextColor="@color/drawer_color"
         android:layout_gravity="start"
         android:fitsSystemWindows="true"
         app:menu="@layout/drawer_view"
