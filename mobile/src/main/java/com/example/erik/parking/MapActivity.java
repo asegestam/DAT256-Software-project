@@ -519,5 +519,10 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
             super.onProgressUpdate(values);
         }
 
+        private void githubSlackTest(){
+
+        }
+
+
     }
 }
