@@ -58,37 +58,7 @@ public class MainActivity extends AppCompatActivity {
 
             }
         });
-
-       /* Button parkingList = (Button) findViewById(R.id.xmlButton);
-        parkingList.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-
-                Intent intent = new Intent(MainActivity.this, Parking.class);
-                startActivity(intent);
-            }
-        });
-
-        btnSendRequest = (Button) findViewById(R.id.btnSendRequest);
-        btnSendRequest.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-
-                SendRequestAndPrintResponse();
-            }
-        });*/
-
-        //OnclickListener for the btnParkingList button
-        Button btnParkingList = (Button) findViewById(R.id.btnParkingList);
-        btnParkingList.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent intent = new Intent(MainActivity.this, ParkingListActivity.class);
-                startActivity(intent);
-            }
-        });
-    }
-
+}
     public boolean isServicesOK(){
         Log.d(TAG, "isServicesOK: checking google services version");
 

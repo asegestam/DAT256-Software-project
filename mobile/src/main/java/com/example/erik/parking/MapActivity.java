@@ -3,6 +3,8 @@ package com.example.erik.parking;
 import android.Manifest;
 import android.content.pm.PackageManager;
 import android.content.res.XmlResourceParser;
+import android.graphics.Color;
+import android.graphics.Typeface;
 import android.location.Location;
 import android.os.AsyncTask;
 import android.support.annotation.NonNull;
@@ -16,12 +18,14 @@ import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.text.method.ScrollingMovementMethod;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageButton;
+import android.widget.LinearLayout;
 import android.widget.PopupMenu;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -55,7 +59,7 @@ import java.util.ArrayList;
 
 public class MapActivity extends AppCompatActivity implements OnMapReadyCallback, GoogleMap.OnMarkerClickListener,
         GoogleMap.OnMapClickListener,
-        PopupMenu.OnMenuItemClickListener{
+        PopupMenu.OnMenuItemClickListener {
 
     private static final String TAG = "MapActivity";
 
@@ -69,6 +73,7 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
     private Marker lastClicked;
     private Boolean mLocationPermissionsGranted = false;
     private GoogleMap mMap;
+    private Marker mLHP;
 
     private ArrayList<Parking> parkings = new ArrayList<>();
     private ArrayList<Marker> markers = new ArrayList<>();
@@ -100,12 +105,11 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
                     @Override
                     public boolean onNavigationItemSelected(@NonNull MenuItem menuItem) {
                         // set item as selected to persist highlight
-                        if (!menuItem.isChecked())
-                        {
+                        if (!menuItem.isChecked()) {
                             menuItem.setChecked(true);
                             onClick_QueryServer();
                             menuItem.setIcon(R.drawable.ic_check_box_true);
-                        }else{
+                        } else {
                             menuItem.setChecked(false);
                             menuItem.setIcon(R.drawable.ic_check_box_false);
                             //Skit som tar bort markers för menuItem
@@ -120,7 +124,7 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
                     }
                 });
 
-        android.support.v7.widget.Toolbar toolbar =  findViewById(R.id.toolbar);
+        android.support.v7.widget.Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         android.support.v7.app.ActionBar actionBar = getSupportActionBar();
         assert actionBar != null;
@@ -163,7 +167,7 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
     }
 
     /*Initializes the map*/
-    private void initMap(){
+    private void initMap() {
         Log.d(TAG, "initMap: initializing the map");
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
@@ -190,7 +194,7 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
                         if (task.isSuccessful()) {
                             Log.d(TAG, "onComplete: Found the location of the device");
                             Location location = (Location) task.getResult();
-                            if(location !=null){
+                            if (location != null) {
                                 moveCamera(new LatLng(location.getLatitude(), location.getLongitude()), DEFAULT_ZOOM);
                             }
 
@@ -259,40 +263,47 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
             }
         }
     }
-    /**Called when a user clicks on the map */
+
+    /**
+     * Called when a user clicks on the map
+     */
     @Override
     public void onMapClick(LatLng latlng) {
         //if there is a last clicked marker, set it to default color red
-        if(lastClicked != null){
+        if (lastClicked != null) {
             lastClicked.setIcon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED));
         }
         //if the favorite button is visible, set it to gone
-        if((findViewById(R.id.favorite_btn)).getVisibility() == View.VISIBLE){
+        if ((findViewById(R.id.favorite_btn)).getVisibility() == View.VISIBLE) {
             (findViewById(R.id.favorite_btn)).setVisibility(View.GONE);
         }
     }
-    /** Called when a user clicks on the marker */
+
+    /**
+     * Called when a user clicks on the marker
+     */
     @Override
     public boolean onMarkerClick(Marker marker) {
         //if there was a lastClicked marker, set it to default color red
-        if(lastClicked != null){
+        if (lastClicked != null) {
             lastClicked.setIcon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED));
         }
         //change the clicked marker to blue
         marker.setIcon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_AZURE));
         lastClicked = marker;
         (findViewById(R.id.favorite_btn)).setVisibility(View.VISIBLE);
-        if(!favorites.contains(lastClicked)){
-            ((ImageButton)findViewById(R.id.favorite_btn)).setImageResource(R.drawable.ic_star_border_black_24dp);
-        }
-        else{
-            ((ImageButton)findViewById(R.id.favorite_btn)).setImageResource(R.drawable.ic_star_black_24dp);
+        if (!favorites.contains(lastClicked)) {
+            ((ImageButton) findViewById(R.id.favorite_btn)).setImageResource(R.drawable.ic_star_border_black_24dp);
+        } else {
+            ((ImageButton) findViewById(R.id.favorite_btn)).setImageResource(R.drawable.ic_star_black_24dp);
         }
 
         return false;
     }
 
-    /**Shows a popup menu when called with map type switching functionality*/
+    /**
+     * Shows a popup menu when called with map type switching functionality
+     */
     public void showPopup(View v) {
         PopupMenu popup = new PopupMenu(this, v);
 
@@ -302,7 +313,9 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
         popup.show();
     }
 
-    /**Changes the maptype depending on what the user clicked on*/
+    /**
+     * Changes the maptype depending on what the user clicked on
+     */
     @Override
     public boolean onMenuItemClick(MenuItem item) {
         switch (item.getItemId()) {
@@ -321,95 +334,110 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
         }
         return true;
     }
-    /** Creates a options menu on creation */
+
+    /**
+     * Creates a options menu on creation
+     */
     @Override
-    public boolean onCreateOptionsMenu(Menu menu){
+    public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.filter_menu, menu);
         return true;
     }
 
-    /** Adds the last clicked marker (i.e currently selected marker) to favorites */
-    public void addMarkerToFavorite(View v){
-        if(!favorites.contains(lastClicked)){
+    /**
+     * Adds the last clicked marker (i.e currently selected marker) to favorites
+     */
+    public void addMarkerToFavorite(View v) {
+        if (!favorites.contains(lastClicked)) {
             favorites.add(lastClicked);
-            ((ImageButton)findViewById(R.id.favorite_btn)).setImageResource(R.drawable.ic_star_black_24dp);
-        }
-        else{
+            ((ImageButton) findViewById(R.id.favorite_btn)).setImageResource(R.drawable.ic_star_black_24dp);
+        } else {
             favorites.remove(lastClicked);
-            ((ImageButton)findViewById(R.id.favorite_btn)).setImageResource(R.drawable.ic_star_border_black_24dp);
+            ((ImageButton) findViewById(R.id.favorite_btn)).setImageResource(R.drawable.ic_star_border_black_24dp);
         }
         Log.d(TAG, "items in favorites: " + favorites.size());
     }
 
-    /** Adds a parking object to a ArrayList
+    /**
+     * Adds a parking object to a ArrayList
      * If the parking spot is added to the map -
      * create a marker and add it to the map
      * add the marker to a ArrayList for control of markers
-     * */
-    private void addMarkerToMap(Parking park) {
-        parkings.add(park);
-        for(Parking parking:parkings){
-            if(!parking.getAdded()){
-                Marker marker = mMap.addMarker(new MarkerOptions().
-                        position(parking.getPosition()).title(parking.getParkingName()));
-                parking.setAdded(true);
-                markers.add(marker);
+     */
+    private void addMarkerToMap(Parking parking) {
+        mLHP = mMap.addMarker(new MarkerOptions().
+                position(parking.getPosition()).
+                title(parking.getName()).
+                snippet(parking.getParkingInformation()));
+        mMap.setOnMarkerClickListener(this);
+        mMap.setInfoWindowAdapter(new GoogleMap.InfoWindowAdapter() {
+            @Override
+            public View getInfoWindow(Marker arg0) {
+                return null;
             }
-        }
+
+            @Override
+            public View getInfoContents(Marker marker) {
+                LinearLayout info = new LinearLayout(MapActivity.this);
+                info.setOrientation(LinearLayout.VERTICAL);
+                TextView title = new TextView(MapActivity.this);
+                title.setTextColor(Color.BLACK);
+                title.setGravity(Gravity.CENTER);
+                title.setTypeface(null, Typeface.BOLD);
+                title.setText(marker.getTitle());
+                TextView snippet = new TextView(MapActivity.this);
+                snippet.setTextColor(Color.GRAY);
+                snippet.setText(marker.getSnippet());
+                info.addView(title);
+                info.addView(snippet);
+                return info;
+            }
+        });
     }
 
-    /** PARKING LIST STARTS HERE **/
 
-    private static final String LATITUDE = "57.707664";
-    private static final String LONGITUDE = "11.938690";
-    private static final String RADIUS = "500";
     private static final String APP_ID = "00e0719c-23ce-4f32-badf-333a0e83fc9e";
-    private static final String SERVER_URL = "http://data.goteborg.se/ParkingService/v2.1/PrivateTollParkings/";
-    private static final String QUERY_OPTIONS = "{" + APP_ID + "}?latitude={" + LATITUDE + "}&longitude={" + LONGITUDE + "}&radius={" + RADIUS + "}";
-    private static final String QUERY_URL = SERVER_URL + QUERY_OPTIONS;
+    private static final String SERVER_URL = "http://data.goteborg.se/ParkingService/v2.1/";
 
-    public void onClick_QueryServer(){
+    //Different types of parkings
+    private static final String PRIVATE_TOLL_PARKINGS = "PrivateTollParkings";
+    private static final String HANDICAP_PARKINGS = "HandicapParkings";
+    private static final String PUBLIC_TOLL_PARKINGS = "PublicTollParkings";
+    private static final String PUBLIC_TIME_PARKINGS = "PublicTimeParkings";
+
+    private static final String QUERY_OPTIONS = "/{" + APP_ID + "}?";
+
+
+    public void onClick_QueryServer() {
         Log.d(TAG, "onClick_QueryServer: onClick_QueryServer() called");
-        AsyncDownloader downloader = new AsyncDownloader();
-        downloader.execute();
+
+        //Create new background processes and get the different parkings
+        new AsyncDownloader().execute(HANDICAP_PARKINGS);
+        new AsyncDownloader().execute(PRIVATE_TOLL_PARKINGS);
+        new AsyncDownloader().execute(PUBLIC_TIME_PARKINGS);
+        new AsyncDownloader().execute(PUBLIC_TOLL_PARKINGS);
     }
 
-    /** Handles the selection of options menu */
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-            case android.R.id.home:
-                mDrawerLayout.openDrawer(GravityCompat.START);
-            //TODO implementera filter skit här
-            case R.id.ktp:
-                if (item.isChecked()) {
-                    item.setChecked(false);
-                    for (Marker marker : markers) {
-                        marker.setVisible(false);
-                    }
-                } else {
-                    item.setChecked(true);
-                    for (Marker marker : markers) {
-                        marker.setVisible(true);
-                    }
-                }
-                break;
-        }
-        return super.onOptionsItemSelected(item);
-    }
-   //Inner class for doing background download
-    private class AsyncDownloader extends AsyncTask<Object, String, Integer> {
+
+    //Inner class for doing background download
+    private class AsyncDownloader extends AsyncTask<Object, Parking, Integer> {
 
         @Override
         protected Integer doInBackground(Object... objects) {
-            XmlPullParser receivedData = tryDownloadingXmlData();
-            return tryParsingXmlData(receivedData);
+            if (objects[0] instanceof String) {
+                String typeOfParking = (String) objects[0];
+                XmlPullParser receivedData = tryDownloadingXmlData(typeOfParking);
+                int recordsFound = tryParsingXmlData(receivedData, typeOfParking);
+                return recordsFound;
+            }
+            return null;
         }
 
-        private XmlPullParser tryDownloadingXmlData() {
+        private XmlPullParser tryDownloadingXmlData(String typeOfParking) {
             try {
                 Log.i(TAG, "tryDownloadingXmlData: Trying to download");
+                String QUERY_URL = SERVER_URL + typeOfParking + QUERY_OPTIONS;
                 URL xmlUrl = new URL(QUERY_URL);
                 XmlPullParser receivedData = XmlPullParserFactory.newInstance().newPullParser();
                 receivedData.setInput(xmlUrl.openStream(), null);
@@ -427,11 +455,11 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
 
         }
 
-        private int tryParsingXmlData(XmlPullParser receivedData) {
+        private int tryParsingXmlData(XmlPullParser receivedData, String typeOfParking) {
             Log.d(TAG, "tryParsingXmlData: Trying to parse the xml");
             if (receivedData != null) {
                 try {
-                    return processReceived(receivedData);
+                    return processReceived(receivedData, typeOfParking);
                 } catch (XmlPullParserException e) {
                     Log.e(TAG, "tryParsingXmlData: Pull Parser failure", e);
                 } catch (IOException e) {
@@ -442,21 +470,66 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
             return -1;
         }
 
-        private int processReceived(XmlPullParser receivedData) throws IOException, XmlPullParserException {
+        private int processReceived(XmlPullParser receivedData, String typeOfParking) throws IOException, XmlPullParserException {
 
             int recordsFound = 0;
 
-            //Values in the XML records
+            Log.d(TAG, "processReceived: Starting to process the received data. Type of parking: " + typeOfParking);
+
+            switch (typeOfParking) {
+                case HANDICAP_PARKINGS:
+                    recordsFound = processHandicapParkings(receivedData);
+                    break;
+
+                case PRIVATE_TOLL_PARKINGS:
+                    recordsFound = processPrivateTollParkings(receivedData);
+                    break;
+
+                case PUBLIC_TIME_PARKINGS:
+                    recordsFound = processPublicTimeParkings(receivedData);
+                    break;
+
+                case PUBLIC_TOLL_PARKINGS:
+                    recordsFound = processPublicTollParkings(receivedData);
+
+
+                default:
+                    publishProgress();
+            }
+
+            if (recordsFound == 0) {
+                publishProgress();
+            }
+            Log.d(TAG, "processReceived: Finnished proccesing data, processed: " + recordsFound + " records, type: " + typeOfParking);
+            return recordsFound;
+        }
+
+        @Override
+        protected void onProgressUpdate(Parking... parkings) {
+            if (parkings.length == 0)
+                Log.i(TAG, "onProgressUpdate: No data Downloaded.");
+            if (parkings.length == 1)
+                addMarkerToMap(parkings[0]);
+
+            super.onProgressUpdate(parkings);
+        }
+
+
+        private int processHandicapParkings(XmlPullParser receivedData) throws IOException, XmlPullParserException {
+            int recordsFound = 0;
+            String endTag = "HandicapParking";
+
+            //Wanted values in the XML records for handicap parkings
             String name = "";
+            String owner = "";
+            String parkingSpaces = "";
+            String maxParkingTime = "";
             String lat = "";
             String lng = "";
-            String cost = "";
-            String time = "";
-
-            Log.d(TAG, "processReceived: Starting to process the received data");
+            String maxParkingTimeLimitation = "";
 
             int eventType = -1;
-            while(eventType != XmlPullParser.END_DOCUMENT) {
+            while (eventType != XmlPullParser.END_DOCUMENT) {
                 String tagName = receivedData.getName();
 
                 switch (eventType) {
@@ -464,65 +537,388 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
                         //Start of a record, so pull values encoded as attributes
                         switch (tagName) {
                             case "Name":
-                                receivedData.next();
-                                name = receivedData.getText();
+                                name = receivedData.nextText();
                                 break;
-                            case "Lat":
-                                receivedData.next();
-                                lat = receivedData.getText();
-                                break;
-                            case "Long":
-                                receivedData.next();
-                                lng = receivedData.getText();
-                                break;
-                            case "CurrentParkingCost":
-                                receivedData.next();
-                                cost = receivedData.getText();
-                                break;
-                        }
-                        break;
 
-                    case XmlResourceParser.TEXT:
-                        // name += receivedData.getText() + "\n";
-                        break;
+                            case "Owner":
+                                owner = receivedData.nextText();
+                                break;
+
+                            case "ParkingSpaces":
+                                parkingSpaces = receivedData.nextText();
+                                break;
+
+                            case "MaxParkingTime":
+                                maxParkingTime = receivedData.nextText();
+                                break;
+
+                            case "Lat":
+                                lat = receivedData.nextText();
+                                break;
+
+                            case "Long":
+                                lng = receivedData.nextText();
+                                break;
+
+                            case "MaxParkingTimeLimitation":
+                                maxParkingTimeLimitation = receivedData.nextText();
+                        }
 
                     case XmlPullParser.END_TAG:
-                        if (tagName.equals("PrivateParking")) {
+                        if (tagName.equals(endTag)) {
                             recordsFound++;
-                            publishProgress(name, lat, lng, time, cost);
+
+                            if (parkingSpaces.equals("")) {
+                                parkingSpaces = "No data";
+                            }
+                            if (maxParkingTimeLimitation.equals("")) {
+                                maxParkingTimeLimitation = "No data";
+                            }
+                            if (maxParkingTime.equals("")) {
+                                maxParkingTime = "No data";
+                            }
+                            if (owner.equals("")) {
+                                owner = "No data";
+                            }
+                            if (lat.equals("")) {
+                                lat = "0";
+                            }
+                            if (lng.equals("")) {
+                                lng = "0";
+                            }
+                            publishProgress(new HandicapParking(name,
+                                    owner,
+                                    parkingSpaces,
+                                    maxParkingTime,
+                                    Double.parseDouble(lat),
+                                    Double.parseDouble(lng),
+                                    maxParkingTimeLimitation
+                            ));
                         }
                         break;
                 }
                 eventType = receivedData.next();
-
-                //Temp, remove so all data goes handled
-                //if (recordsFound > 50)
-                //  break;
             }
 
-            if (recordsFound == 0) {
-                publishProgress();
-            }
-            Log.d(TAG, "processReceived: Finnished proccesing data, processed: " + recordsFound + " records.");
             return recordsFound;
+
         }
 
-        @Override
-        protected void onProgressUpdate(String... values){
-            if (values.length == 0)
-                Log.i(TAG, "onProgressUpdate: No data Downloaded");
-            if (values.length != 0) {
-                //addContentToTextView(values[0] + " " + values[1]  + " " + values[2]  + " " + values[3]);
-                addMarkerToMap(new Parking(values[0], Double.parseDouble(values[1]), Double.parseDouble(values[2]), values[3], values[4], false));
+        private int processPrivateTollParkings(XmlPullParser receivedData) throws IOException, XmlPullParserException {
+            int recordsFound = 0;
+            String endTag = "PrivateParking";
+
+            //Wanted values in the XML records for handicap parkings
+            String name = "";
+            String owner = "";
+            String parkingSpaces = "";
+            String maxParkingTime = "";
+            String lat = "";
+            String lng = "";
+            String parkingCost = "";
+            String currentParkingCost = "";
+            String phoneParkingCode = "";
+
+
+            int eventType = -1;
+            while (eventType != XmlPullParser.END_DOCUMENT) {
+                String tagName = receivedData.getName();
+
+                switch (eventType) {
+                    case XmlPullParser.START_TAG:
+                        //Start of a record, so pull values encoded as attributes
+                        switch (tagName) {
+                            case "Name":
+                                name = receivedData.nextText();
+                                break;
+
+                            case "Owner":
+                                owner = receivedData.nextText();
+                                break;
+
+                            case "ParkingSpaces":
+                                parkingSpaces = receivedData.nextText();
+                                break;
+
+                            case "MaxParkingTime":
+                                maxParkingTime = receivedData.nextText();
+                                break;
+
+                            case "Lat":
+                                lat = receivedData.nextText();
+                                break;
+
+                            case "Long":
+                                lng = receivedData.nextText();
+                                break;
+
+                            case "ParkingCost":
+                                parkingCost = receivedData.nextText();
+                                break;
+
+                            case "CurrentParkingCost":
+                                currentParkingCost = receivedData.nextText();
+                                break;
+
+                            case "PhoneParkingCode":
+                                phoneParkingCode = receivedData.nextText();
+                                break;
+
+                        }
+
+                    case XmlPullParser.END_TAG:
+                        if (tagName.equals(endTag)) {
+                            recordsFound++;
+
+                            if (name == "") name = "NoData";
+                            if (owner == "") owner = "No Data";
+                            if (parkingSpaces == "") parkingSpaces = "No Data";
+                            if (maxParkingTime == "") maxParkingTime = "No Data";
+                            if (parkingCost == "") parkingCost = "No Data";
+                            if (currentParkingCost == "") currentParkingCost = "No Data";
+                            if (phoneParkingCode == "") phoneParkingCode = "No Data";
+                            if (lat == "") lat = "0";
+                            if (lng == "") lng = "0";
+
+                            publishProgress(new PrivateTollParking(name,
+                                    owner,
+                                    parkingSpaces,
+                                    maxParkingTime,
+                                    Double.parseDouble(lat),
+                                    Double.parseDouble(lng),
+                                    parkingCost,
+                                    currentParkingCost,
+                                    phoneParkingCode
+                            ));
+                        }
+                        break;
+                }
+                eventType = receivedData.next();
             }
 
-            super.onProgressUpdate(values);
-        }
-
-        private void githubSlackTest(){
+            return recordsFound;
 
         }
 
+        private int processPublicTimeParkings(XmlPullParser receivedData) throws IOException, XmlPullParserException {
+            int recordsFound = 0;
+            String endTag = "PublicTimeParking";
+
+            //Wanted values in the XML records for handicap parkings
+            String name = "";
+            String owner = "";
+            String parkingSpaces = "";
+            String maxParkingTime = "";
+            String lat = "";
+            String lng = "";
+            String parkingCost = "";
+            String parkingCharge = "";
+            String currentParkingCost = "";
+            String phoneParkingCode = "";
+            String maxParkingTimeLimitation = "";
+
+
+            int eventType = -1;
+            while (eventType != XmlPullParser.END_DOCUMENT) {
+                String tagName = receivedData.getName();
+
+                switch (eventType) {
+                    case XmlPullParser.START_TAG:
+                        //Start of a record, so pull values encoded as attributes
+                        switch (tagName) {
+                            case "Name":
+                                name = receivedData.nextText();
+                                break;
+
+                            case "Owner":
+                                owner = receivedData.nextText();
+                                break;
+
+                            case "ParkingSpaces":
+                                parkingSpaces = receivedData.nextText();
+                                break;
+
+                            case "MaxParkingTime":
+                                maxParkingTime = receivedData.nextText();
+                                break;
+
+                            case "Lat":
+                                lat = receivedData.nextText();
+                                break;
+
+                            case "Long":
+                                lng = receivedData.nextText();
+                                break;
+
+                            case "ParkingCost":
+                                parkingCost = receivedData.nextText();
+                                break;
+
+                            case "ParkingCharge":
+                                parkingCharge = receivedData.nextText();
+                                break;
+
+                            case "CurrentParkingCost":
+                                currentParkingCost = receivedData.nextText();
+                                break;
+
+                            case "PhoneParkingCode":
+                                phoneParkingCode = receivedData.nextText();
+                                break;
+
+                            case "MaxParkingTimeLimitation":
+                                maxParkingTimeLimitation = receivedData.nextText();
+                                break;
+
+                        }
+
+                    case XmlPullParser.END_TAG:
+                        if (tagName.equals(endTag)) {
+                            recordsFound++;
+
+                            if (name == "") name = "NoData";
+                            if (owner == "") owner = "No Data";
+                            if (parkingSpaces == "") parkingSpaces = "No Data";
+                            if (maxParkingTime == "") maxParkingTime = "No Data";
+                            if (parkingCost == "") parkingCost = "No Data";
+                            if (currentParkingCost == "") currentParkingCost = "No Data";
+                            if (phoneParkingCode == "") phoneParkingCode = "No Data";
+                            if (lat == "") lat = "0";
+                            if (lng == "") lng = "0";
+                            if (maxParkingTimeLimitation == "")
+                                maxParkingTimeLimitation = "No data";
+
+                            publishProgress(new PublicTollParking(name,
+                                    owner,
+                                    parkingSpaces,
+                                    maxParkingTime,
+                                    Double.parseDouble(lat),
+                                    Double.parseDouble(lng),
+                                    parkingCost,
+                                    parkingCharge,
+                                    currentParkingCost,
+                                    phoneParkingCode,
+                                    maxParkingTimeLimitation
+                            ));
+                        }
+                        break;
+                }
+                eventType = receivedData.next();
+            }
+
+            return recordsFound;
+
+        }
+
+        private int processPublicTollParkings(XmlPullParser receivedData) throws IOException, XmlPullParserException {
+            int recordsFound = 0;
+            String endTag = "PublicTollParking";
+
+            //Wanted values in the XML records for handicap parkings
+            String name = "";
+            String owner = "";
+            String parkingSpaces = "";
+            String maxParkingTime = "";
+            String lat = "";
+            String lng = "";
+            String parkingCost = "";
+            String parkingCharge = "";
+            String currentParkingCost = "";
+            String phoneParkingCode = "";
+            String maxParkingTimeLimitation = "";
+
+
+            int eventType = -1;
+            while (eventType != XmlPullParser.END_DOCUMENT) {
+                String tagName = receivedData.getName();
+
+                switch (eventType) {
+                    case XmlPullParser.START_TAG:
+                        //Start of a record, so pull values encoded as attributes
+                        switch (tagName) {
+                            case "Name":
+                                name = receivedData.nextText();
+                                break;
+
+                            case "Owner":
+                                owner = receivedData.nextText();
+                                break;
+
+                            case "ParkingSpaces":
+                                parkingSpaces = receivedData.nextText();
+                                break;
+
+                            case "MaxParkingTime":
+                                maxParkingTime = receivedData.nextText();
+                                break;
+
+                            case "Lat":
+                                lat = receivedData.nextText();
+                                break;
+
+                            case "Long":
+                                lng = receivedData.nextText();
+                                break;
+
+                            case "ParkingCost":
+                                parkingCost = receivedData.nextText();
+                                break;
+
+                            case "ParkingCharge":
+                                parkingCharge = receivedData.nextText();
+                                break;
+
+                            case "CurrentParkingCost":
+                                currentParkingCost = receivedData.nextText();
+                                break;
+
+                            case "PhoneParkingCode":
+                                phoneParkingCode = receivedData.nextText();
+                                break;
+
+                            case "MaxParkingTimeLimitation":
+                                maxParkingTimeLimitation = receivedData.nextText();
+                                break;
+
+                        }
+
+                    case XmlPullParser.END_TAG:
+                        if (tagName.equals(endTag)) {
+                            recordsFound++;
+
+                            if (name == "") name = "NoData";
+                            if (owner == "") owner = "No Data";
+                            if (parkingSpaces == "") parkingSpaces = "No Data";
+                            if (maxParkingTime == "") maxParkingTime = "No Data";
+                            if (parkingCost == "") parkingCost = "No Data";
+                            if (currentParkingCost == "") currentParkingCost = "No Data";
+                            if (phoneParkingCode == "") phoneParkingCode = "No Data";
+                            if (lat == "") lat = "0";
+                            if (lng == "") lng = "0";
+                            if (maxParkingTimeLimitation == "")
+                                maxParkingTimeLimitation = "No data";
+
+                            publishProgress(new PublicTollParking(name,
+                                    owner,
+                                    parkingSpaces,
+                                    maxParkingTime,
+                                    Double.parseDouble(lat),
+                                    Double.parseDouble(lng),
+                                    parkingCost,
+                                    parkingCharge,
+                                    currentParkingCost,
+                                    phoneParkingCode,
+                                    maxParkingTimeLimitation
+                            ));
+                        }
+                        break;
+                }
+                eventType = receivedData.next();
+            }
+
+            return recordsFound;
+
+        }
 
     }
 }
