@@ -4,7 +4,11 @@ android {
     compileSdkVersion 28
     defaultConfig {
         applicationId "com.example.erik.parking"
+<<<<<<< Updated upstream
         minSdkVersion 27
+=======
+        minSdkVersion 24
+>>>>>>> Stashed changes
         targetSdkVersion 28
         versionCode 1
         versionName "1.0"
