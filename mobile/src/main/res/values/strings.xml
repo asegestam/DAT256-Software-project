@@ -1,4 +1,17 @@
 <resources>
-    <string name="app_name">parking</string>
-    <string name="title_activity_maps">Map</string>
+    <!--App name-->
+    <string name="app_name">Par-King</string>
+
+    <!--Slogan-->
+    <string name="slogan">The darn best Par-King you can get!</string>
+
+    <!--User Warning-->
+    <string name="user_warning">Hereby, I certify that I am aware of the risks of using a device while handling a vehicle.
+                                I take into account laws and regulations wherever I am and take full responsibility for how
+                                this application is handled.</string>
+
+    <!--text for components-->
+    <string name="menu">Menu</string>
+    <string name="accept">Accept</string>
+
 </resources>

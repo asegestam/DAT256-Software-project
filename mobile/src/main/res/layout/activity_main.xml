@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/blue"
+    tools:context="com.example.erik.parking.MainActivity">
+
+    <!--App_name-->
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/app_name"
+        android:text="@string/app_name"
+        android:layout_centerHorizontal="true"
+        android:paddingTop="35dp"
+        android:fontFamily="@font/nunito_italic"
+        android:textSize="46dp"
+        android:textColor="@color/white"/>
+
+    <!--Slogan-->
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/slogan"
+        android:text="@string/slogan"
+        android:layout_below="@id/app_name"
+        android:layout_centerHorizontal="true"
+        android:fontFamily="@font/yantramanav_light"
+        android:textColor="@color/white"/>
+
+    <!--Center Image-->
+    <ImageView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_centerHorizontal="true"
+        android:layout_centerVertical="true"
+        android:src="@drawable/city_animation"/>
+
+    <!--Warning_text-->
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:layout_margin="20dp"
+        android:id="@+id/warning_text"
+        android:textSize="18dp"
+        android:gravity="center_horizontal"
+        android:fontFamily="@font/robotocondensed_light_italic"
+        android:text="@string/user_warning"
+        android:layout_above="@id/btnMap"
+        android:textColor="@color/white"/>
+
+    <!--Accept button-->
+    <Button
+        android:id="@+id/btnMap"
+        android:layout_width="wrap_content"
+        android:layout_height="50dp"
+        android:layout_centerHorizontal="true"
+        android:layout_alignParentBottom="true"
+        android:layout_marginBottom="30dp"
+        android:text="@string/accept"
+        android:background="@color/lightBlue"
+        android:textColor="@color/white"
+        android:fontFamily="@font/yantramanav_regular"/>
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Parking List"
+        android:background="@color/lightBlue"
+        android:textColor="@color/white"
+        android:layout_toRightOf="@id/btnMap"
+        android:layout_alignBaseline="@id/btnMap"
+        android:id="@+id/btnParkingList"
+        />
+
+</RelativeLayout>
