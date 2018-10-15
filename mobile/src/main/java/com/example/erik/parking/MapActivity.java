@@ -1,17 +1,11 @@
 package com.example.erik.parking;
 
 import android.Manifest;
-<<<<<<< HEAD
 import android.content.Context;
 import android.content.pm.PackageManager;
 import android.content.res.XmlResourceParser;
 import android.location.Location;
 import android.location.LocationManager;
-=======
-import android.content.pm.PackageManager;
-import android.content.res.XmlResourceParser;
-import android.location.Location;
->>>>>>> 58c393cef800325a0e1a99d168c41bcbf7868a47
 import android.os.AsyncTask;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -52,11 +46,7 @@ import java.net.URL;
 import java.util.ArrayList;
 
 
-<<<<<<< HEAD
 public class MapActivity extends AppCompatActivity implements OnMapReadyCallback, GoogleMap.OnMapClickListener, GoogleMap.OnMarkerClickListener, PopupMenu.OnMenuItemClickListener {
-=======
-public class MapActivity extends AppCompatActivity implements OnMapReadyCallback,GoogleMap.OnMapClickListener, GoogleMap.OnMarkerClickListener, PopupMenu.OnMenuItemClickListener {
->>>>>>> 58c393cef800325a0e1a99d168c41bcbf7868a47
     /** Static declarations */
     private static final String TAG = "MapActivity";
 
@@ -128,11 +118,7 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
     }
 
     /*Initializes the map*/
-<<<<<<< HEAD
     private void initMap() {
-=======
-    private void initMap(){
->>>>>>> 58c393cef800325a0e1a99d168c41bcbf7868a47
         Log.d(TAG, "initMap: initializing the map");
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
@@ -158,11 +144,7 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
                         if (task.isSuccessful()) {
                             Log.d(TAG, "onComplete: Found the location of the device");
                             Location location = (Location) task.getResult();
-<<<<<<< HEAD
                             if (location != null) {
-=======
-                            if(location != null){
->>>>>>> 58c393cef800325a0e1a99d168c41bcbf7868a47
                                 moveCamera(new LatLng(location.getLatitude(), location.getLongitude()), DEFAULT_ZOOM);
                             }
 
@@ -192,11 +174,7 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
     private void getLocationPermission() {
         Log.d(TAG, "getLocationPermission: getting location permissions");
         String[] permissions = {Manifest.permission.ACCESS_FINE_LOCATION,
-<<<<<<< HEAD
                 Manifest.permission.ACCESS_COARSE_LOCATION};
-=======
-                                Manifest.permission.ACCESS_COARSE_LOCATION};
->>>>>>> 58c393cef800325a0e1a99d168c41bcbf7868a47
 
         //Check the permissions fine_location and coarse_location from the user
         if (ContextCompat.checkSelfPermission(this.getApplicationContext(), FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
@@ -221,11 +199,7 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
         switch (requestCode) {
             case LOCATION_PERMISSION_REQUEST_CODE: {
                 if (grantResults.length > 0) {
-<<<<<<< HEAD
                     for (int i = 0; i < grantResults.length; i++) {
-=======
-                    for(int i = 0; i < grantResults.length; i++) {
->>>>>>> 58c393cef800325a0e1a99d168c41bcbf7868a47
                         if (grantResults[i] != PackageManager.PERMISSION_GRANTED) {
                             Log.d(TAG, "onRequestPermissionsResult: permission failed");
                             mLocationPermissionsGranted = false;
@@ -240,15 +214,11 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
             }
         }
     }
-<<<<<<< HEAD
 
-=======
->>>>>>> 58c393cef800325a0e1a99d168c41bcbf7868a47
     /**Called when a user clicks on the map */
     @Override
     public void onMapClick(LatLng latlng) {
         //if there is a last clicked marker, set it to default color red
-<<<<<<< HEAD
         if (lastClicked != null) {
             lastClicked.setIcon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED));
         }
@@ -271,21 +241,10 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
         return ressssult;
     }
 
-=======
-        if(lastClicked != null){
-            lastClicked.setIcon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED));
-        }
-        //if the favorite button is visible, set it to gone
-        if((findViewById(R.id.favorite_btn)).getVisibility() == View.VISIBLE){
-            (findViewById(R.id.favorite_btn)).setVisibility(View.GONE);
-        }
-    }
->>>>>>> 58c393cef800325a0e1a99d168c41bcbf7868a47
     /** Called when a user clicks on the marker */
     @Override
     public boolean onMarkerClick(Marker marker) {
         //if there was a lastClicked marker, set it to default color red
-<<<<<<< HEAD
 
 
         if (lastClicked != null) {
@@ -293,33 +252,20 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
 
 
             marker.setSnippet("fågelavstånd: " + getDistance(marker.getPosition(), getMyLocation()) + "m");
-=======
-        if(lastClicked != null){
-            lastClicked.setIcon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED));
->>>>>>> 58c393cef800325a0e1a99d168c41bcbf7868a47
         }
         //change the clicked marker to blue
         marker.setIcon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_AZURE));
         lastClicked = marker;
         (findViewById(R.id.favorite_btn)).setVisibility(View.VISIBLE);
-<<<<<<< HEAD
         if (!favorites.contains(lastClicked)) {
             ((ImageButton) findViewById(R.id.favorite_btn)).setImageResource(R.drawable.ic_star_border_black_24dp);
         } else {
             ((ImageButton) findViewById(R.id.favorite_btn)).setImageResource(R.drawable.ic_star_black_24dp);
-=======
-        if(!favorites.contains(lastClicked)){
-            ((ImageButton)findViewById(R.id.favorite_btn)).setImageResource(R.drawable.ic_star_border_black_24dp);
-        }
-        else{
-            ((ImageButton)findViewById(R.id.favorite_btn)).setImageResource(R.drawable.ic_star_black_24dp);
->>>>>>> 58c393cef800325a0e1a99d168c41bcbf7868a47
         }
 
         return false;
     }
 
-<<<<<<< HEAD
     private LatLng getMyLocation() {
         LocationManager lm = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
         Location location = lm.getLastKnownLocation(LocationManager.GPS_PROVIDER);
@@ -329,8 +275,6 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
         return  myPos;
     }
 
-=======
->>>>>>> 58c393cef800325a0e1a99d168c41bcbf7868a47
     /**Shows a popup menu when called with map type switching functionality*/
     public void showPopup(View v) {
         PopupMenu popup = new PopupMenu(this, v);
@@ -425,10 +369,7 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
     private static final String RADIUS = "500";
 
 
-<<<<<<< HEAD
 
-=======
->>>>>>> 58c393cef800325a0e1a99d168c41bcbf7868a47
     private static final String APP_ID = "00e0719c-23ce-4f32-badf-333a0e83fc9e";
     private static final String SERVER_URL = "http://data.goteborg.se/ParkingService/v2.1/PrivateTollParkings/";
     private static final String QUERY_OPTIONS = "{" + APP_ID + "}?latitude={" + LATITUDE + "}&longitude={" + LONGITUDE + "}&radius={" + RADIUS + "}";
