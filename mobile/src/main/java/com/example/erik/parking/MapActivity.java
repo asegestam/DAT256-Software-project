@@ -189,6 +189,7 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
             } catch (Resources.NotFoundException e) {
                 Log.e(TAG, "Can't find style. Error: ", e);
             }
+            mMap.setPadding(0,170,0,0);
             mMap.setMyLocationEnabled(true);
             mMap.setMyLocationEnabled(true);
             mMap.setOnMarkerClickListener(this);
