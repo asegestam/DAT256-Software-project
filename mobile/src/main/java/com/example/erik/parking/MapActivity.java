@@ -86,15 +86,18 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_maps);
-
+        mDrawerLayout = findViewById(R.id.drawer_layout);
         NavigationView navigationView = findViewById(R.id.nav_view);
         if (navigationView != null) {
             navigationView.setNavigationItemSelectedListener(this);
         }
-
+        android.support.v7.widget.Toolbar toolbar = findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+        android.support.v7.app.ActionBar actionBar = getSupportActionBar();
+        assert actionBar != null;
+        actionBar.setDisplayHomeAsUpEnabled(true);
+        actionBar.setHomeAsUpIndicator(R.drawable.ic_menu);
         getLocationPermission();
-        init();
-        onClick_QueryServer();
     }
 
     @Override
@@ -313,7 +316,6 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
      */
     @Override
     public boolean onMarkerClick(Marker marker) {
-        marker.getTag().getClass();
         //if there was a lastClicked marker, set it to default color red
         if (lastClicked != null) {
             lastClicked.setIcon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED));
