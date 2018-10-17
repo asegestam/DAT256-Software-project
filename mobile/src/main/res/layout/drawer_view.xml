@@ -31,20 +31,4 @@
                 android:title="Dark"/>
         </menu>
     </item>
-
-    <item android:title="Favorites">
-        <menu>
-            <item
-                android:id="@+id/item4"
-                android:title="Lindholmen" />
-            <item
-                android:id="@+id/item5"
-                android:title="Nordstan" />
-            <item
-                android:id="@+id/item6"
-                android:title="Heden" />
-        </menu>
-    </item>
-
-
 </menu>
