@@ -56,7 +56,8 @@ import java.util.ArrayList;
 
 public class MapActivity extends AppCompatActivity implements OnMapReadyCallback, GoogleMap.OnMarkerClickListener,
         GoogleMap.OnMapClickListener,
-        PopupMenu.OnMenuItemClickListener {
+        PopupMenu.OnMenuItemClickListener,
+        NavigationView.OnNavigationItemSelectedListener {
 
     private static final String TAG = "MapActivity";
 
@@ -86,41 +87,67 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_maps);
 
-        mDrawerLayout = findViewById(R.id.drawer_layout);
-
-        final NavigationView navigationView = findViewById(R.id.nav_view);
-        navigationView.setNavigationItemSelectedListener(
-                new NavigationView.OnNavigationItemSelectedListener() {
-                    @Override
-                    public boolean onNavigationItemSelected(@NonNull MenuItem menuItem) {
-                        // set item as selected to persist highlight
-                        if (!menuItem.isChecked()) {
-                            menuItem.setChecked(true);
-                            //onClick_QueryServer();
-                            menuItem.setIcon(R.drawable.ic_check_box_true);
-                        } else {
-                            menuItem.setChecked(false);
-                            menuItem.setIcon(R.drawable.ic_check_box_false);
-                            //Skit som tar bort markers för menuItem
-                        }
-                        // close drawer when item is tapped
-                        //mDrawerLayout.closeDrawers();
-
-                        // Add code here to update the UI based on the item selected
-                        // For example, swap UI fragments here
-
-                        return true;
-                    }
-                });
-
-        android.support.v7.widget.Toolbar toolbar = findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
-        android.support.v7.app.ActionBar actionBar = getSupportActionBar();
-        assert actionBar != null;
-        actionBar.setDisplayHomeAsUpEnabled(true);
-        actionBar.setHomeAsUpIndicator(R.drawable.ic_menu);
+        NavigationView navigationView = findViewById(R.id.nav_view);
+        if (navigationView != null) {
+            navigationView.setNavigationItemSelectedListener(this);
+        }
 
         getLocationPermission();
+        init();
+        onClick_QueryServer();
+    }
+
+    @Override
+    public boolean onNavigationItemSelected(MenuItem menuItem){
+        int id = menuItem.getItemId();
+        if (id == R.id.lessThanTenMin)
+            lessThanTenMin();
+        else if (id == R.id.lessThanOneHour)
+            lessThanOneHour();
+        else if (id == R.id.greaterThanOneHour)
+            greaterThanOneHour();
+        else if (id == R.id.standardTheme ||
+                id == R.id.retroTheme ||
+                id == R.id.darkTheme)
+            setMapTheme(id);
+
+
+            return false;
+    }
+
+    public void lessThanTenMin(){
+        Toast.makeText(this, "lessThanTenMin", Toast.LENGTH_SHORT).show();
+    }
+
+    public void lessThanOneHour(){
+        Toast.makeText(this, "lessThanOneHour", Toast.LENGTH_SHORT).show();
+    }
+
+    public void greaterThanOneHour(){
+        Toast.makeText(this, "greaterThanOneHour", Toast.LENGTH_SHORT).show();
+    }
+
+    public void setMapTheme(int id){
+        switch (id){
+            case R.id.standardTheme:
+                mMap.setMapStyle(
+                        MapStyleOptions.loadRawResourceStyle(
+                                this, R.raw.standard_theme));
+                break;
+
+            case R.id.retroTheme:
+                mMap.setMapStyle(
+                        MapStyleOptions.loadRawResourceStyle(
+                                this, R.raw.retro_theme));
+                break;
+
+            case R.id.darkTheme:
+                mMap.setMapStyle(
+                        MapStyleOptions.loadRawResourceStyle(
+                                this, R.raw.dark_theme));
+                break;
+
+        }
     }
 
     @Override
@@ -479,7 +506,6 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
         new AsyncDownloader().execute(PUBLIC_TIME_PARKINGS);
         new AsyncDownloader().execute(PUBLIC_TOLL_PARKINGS);
     }
-
 
     //Inner class for doing background download
     private class AsyncDownloader extends AsyncTask<Object, Parking, Integer> {

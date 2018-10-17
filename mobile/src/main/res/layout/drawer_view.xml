@@ -1,22 +1,50 @@
 <?xml version="1.0" encoding="utf-8"?>
-<menu xmlns:android="http://schemas.android.com/apk/res/android"  android:layout_height="match_parent" android:layout_width="match_parent">
-    <group android:checkableBehavior="none">
-        <item
-            android:id="@+id/nav_camera"
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_height="match_parent"
+    android:layout_width="match_parent">
 
-            android:icon="@drawable/ic_check_box_false"
-            android:title="Parkeringar" />
-        <item
-            android:id="@+id/nav_gallery"
-            android:icon="@drawable/ic_check_box_false"
-            android:title="Är" />
-        <item
-            android:id="@+id/nav_slideshow"
-            android:icon="@drawable/ic_check_box_false"
-            android:title="En" />
-        <item
-            android:id="@+id/nav_manage"
-            android:icon="@drawable/ic_check_box_false"
-            android:title="Potatis" />
-    </group>
+
+    <item android:title="Errand Time">
+        <menu>
+            <item
+                android:id="@+id/lessThanTenMin"
+                android:title="&lt; 10min" />
+            <item
+                android:id="@+id/lessThanOneHour"
+                android:title="&lt; 1h" />
+            <item
+                android:id="@+id/greaterThanOneHour"
+                android:title="&gt; 1h" />
+        </menu>
+    </item>
+
+    <item android:title="Map Themes">
+        <menu>
+            <item
+                android:id="@+id/standardTheme"
+                android:title="Standard"/>
+            <item
+                android:id="@+id/retroTheme"
+                android:title="Retro"/>
+            <item
+                android:id="@+id/darkTheme"
+                android:title="Dark"/>
+        </menu>
+    </item>
+
+    <item android:title="Favorites">
+        <menu>
+            <item
+                android:id="@+id/item4"
+                android:title="Lindholmen" />
+            <item
+                android:id="@+id/item5"
+                android:title="Nordstan" />
+            <item
+                android:id="@+id/item6"
+                android:title="Heden" />
+        </menu>
+    </item>
+
+
 </menu>
