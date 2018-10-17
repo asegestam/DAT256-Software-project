@@ -21,6 +21,7 @@ import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.view.SubMenu;
 import android.view.View;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
@@ -82,6 +83,8 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
     private ArrayList<Marker> markers = new ArrayList<>();
     private ArrayList<Marker> favorites = new ArrayList<>();
 
+    private SubMenu subMenu;
+
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -111,8 +114,19 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
             greaterThanOneHour();
         else if (id == R.id.standardTheme ||
                 id == R.id.retroTheme ||
-                id == R.id.darkTheme)
+                id == R.id.darkTheme){
             setMapTheme(id);
+        }else{
+            for(Marker marker: favorites){
+                if(marker.getTitle().equals(menuItem.getTitle())){
+                    moveCamera(marker.getPosition(), DEFAULT_ZOOM);
+                    marker.showInfoWindow();
+                    marker.setIcon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_AZURE));
+                    mDrawerLayout.closeDrawers();
+                    break;
+                }
+            }
+        }
 
 
             return false;
@@ -448,7 +462,14 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
             favorites.add(lastClicked);
             Toast.makeText(this, "Tillagd i favoriter", Toast.LENGTH_SHORT).show();
             ((ImageButton) findViewById(R.id.favorite_btn)).setImageResource(R.drawable.ic_star_black_24dp);
+            NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
+            Menu menu = navigationView.getMenu();
+            if (subMenu == null)
+                subMenu = menu.addSubMenu("Favorites");
+            subMenu.add(Menu.NONE, lastClicked.hashCode(), Menu.NONE, lastClicked.getTitle());
+
         } else {
+            subMenu.removeItem(lastClicked.hashCode());
             favorites.remove(lastClicked);
             Toast.makeText(this, "Borttagen ur favoriter", Toast.LENGTH_SHORT).show();
             ((ImageButton) findViewById(R.id.favorite_btn)).setImageResource(R.drawable.ic_star_border_black_24dp);
