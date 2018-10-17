@@ -10,21 +10,27 @@ public class Parking {
     private String parkingSpaces;
     private String maxParkingTime;
     private LatLng position;
+    private boolean isAdded;
+    private String type ="";
 
-    public Parking(String name, String owner, String parkingSpaces, String maxParkingTime, double lat, double lng){
+    public Parking(String name, String owner, String parkingSpaces, String maxParkingTime, double lat, double lng, boolean isAdded){
         this.name = name;
         this.owner = owner;
         this.parkingSpaces = parkingSpaces;
         this.maxParkingTime = maxParkingTime;
+        this.isAdded = isAdded;
         position = new LatLng(lat, lng);
-
     }
 
     public String getParkingInformation() {
-        return  "Type of parking: " + this.getClass().getName() + "\n" +
-                "Owner: " + getOwner() + "\n" +
-                "ParkingSpaces: " + getParkingSpaces() + "\n" +
-                "MaxParkingTime: " + getMaxParkingTime() + "\n";
+        return  "Typ av parkering: " + this.getType() + "\n" +
+                "Ägare: " + getOwner() + "\n" +
+                "Antal platser: " + getParkingSpaces() + "\n" +
+                "Maximal parkeringstid: " + getMaxParkingTime() + "\n";
+    }
+
+    public String getType(){
+        return type;
     }
 
     public String getName() {
@@ -65,6 +71,14 @@ public class Parking {
 
     public void setPosition(LatLng position) {
         this.position = position;
+    }
+
+    public boolean getAdded(){
+        return isAdded;
+    }
+
+    public void setAdded(boolean add){
+        this.isAdded = add;
     }
 
 

@@ -2,7 +2,7 @@ package com.example.erik.parking;
 
 import android.Manifest;
 import android.content.pm.PackageManager;
-import android.content.res.XmlResourceParser;
+import android.content.res.Resources;
 import android.graphics.Color;
 import android.graphics.Typeface;
 import android.location.Location;
@@ -16,21 +16,17 @@ import android.support.v4.content.ContextCompat;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.AppCompatActivity;
-import android.text.method.ScrollingMovementMethod;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.PopupMenu;
 import android.widget.TextView;
 import android.widget.Toast;
-import android.support.v7.app.ActionBar;
-import android.widget.Toolbar;
 
 
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -42,6 +38,7 @@ import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.MapStyleOptions;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.tasks.Task;
@@ -73,24 +70,16 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
     private Marker lastClicked;
     private Boolean mLocationPermissionsGranted = false;
     private GoogleMap mMap;
-    private Marker mLHP;
+
+    //Different types of parkings
+    private static final String PRIVATE_TOLL_PARKINGS = "PrivateTollParkings";
+    private static final String HANDICAP_PARKINGS = "HandicapParkings";
+    private static final String PUBLIC_TOLL_PARKINGS = "PublicTollParkings";
+    private static final String PUBLIC_TIME_PARKINGS = "PublicTimeParkings";
 
     private ArrayList<Parking> parkings = new ArrayList<>();
     private ArrayList<Marker> markers = new ArrayList<>();
     private ArrayList<Marker> favorites = new ArrayList<>();
-
-    protected void init() {
-
-        ImageButton btn;
-
-        btn = findViewById(R.id.btnMarker);
-        btn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                onClick_QueryServer();
-            }
-        });
-    }
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -107,7 +96,7 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
                         // set item as selected to persist highlight
                         if (!menuItem.isChecked()) {
                             menuItem.setChecked(true);
-                            onClick_QueryServer();
+                            //onClick_QueryServer();
                             menuItem.setIcon(R.drawable.ic_check_box_true);
                         } else {
                             menuItem.setChecked(false);
@@ -132,14 +121,13 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
         actionBar.setHomeAsUpIndicator(R.drawable.ic_menu);
 
         getLocationPermission();
-        init();
     }
 
     @Override
     public void onMapReady(GoogleMap googleMap) {
 
         //Notify the user that the map is ready to be used
-        Toast.makeText(this, "Map is Ready", Toast.LENGTH_SHORT).show();
+        Toast.makeText(this, "Redo att köras", Toast.LENGTH_SHORT).show();
         Log.d(TAG, "onMapReady: Map is ready");
         mMap = googleMap;
 
@@ -158,10 +146,24 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
                 // for ActivityCompat#requestPermissions for more details.
                 return;
             }
+            try {
+                // Customise the styling of the base map using a JSON object defined
+                // in a raw resource file.
+                boolean success = googleMap.setMapStyle(
+                        MapStyleOptions.loadRawResourceStyle(
+                                this, R.raw.style_aubergine));
+
+                if (!success) {
+                    Log.e(TAG, "Style parsing failed.");
+                }
+            } catch (Resources.NotFoundException e) {
+                Log.e(TAG, "Can't find style. Error: ", e);
+            }
             mMap.setMyLocationEnabled(true);
             mMap.setMyLocationEnabled(true);
             mMap.setOnMarkerClickListener(this);
             mMap.setOnMapClickListener(this);
+            onClick_QueryServer();
 
         }
     }
@@ -284,6 +286,7 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
      */
     @Override
     public boolean onMarkerClick(Marker marker) {
+        marker.getTag().getClass();
         //if there was a lastClicked marker, set it to default color red
         if (lastClicked != null) {
             lastClicked.setIcon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED));
@@ -345,15 +348,79 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
         return true;
     }
 
+    /** Handles the selection of options menu */
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case android.R.id.home:
+                mDrawerLayout.openDrawer(GravityCompat.START);
+                //TODO implementera filter skit här
+            case R.id.hkp:
+                if (item.isChecked()) {
+                    item.setChecked(false);
+                    for (Marker marker : markers) {
+                        if (marker.getTag() instanceof HandicapParking) {
+                            marker.setVisible(false);
+                        }
+                    }
+                } else {
+                    item.setChecked(true);
+                    for (Marker marker : markers) {
+                        if (marker.getTag() instanceof HandicapParking) {
+                            marker.setVisible(true);
+                        }
+                    }
+                }
+                break;
+            case R.id.free:
+                if (item.isChecked()) {
+                    item.setChecked(false);
+                    for (Marker marker : markers) {
+                        if (marker.getTag() instanceof FreeParking && !(marker.getTag() instanceof HandicapParking)) {
+                                marker.setVisible(false);
+                        }
+                    }
+                } else {
+                    item.setChecked(true);
+                    for (Marker marker : markers) {
+                        if (marker.getTag() instanceof FreeParking && !(marker.getTag() instanceof HandicapParking)) {
+                            marker.setVisible(true);
+                        }
+                    }
+                }
+                break;
+            case R.id.betal:
+                if (item.isChecked()) {
+                    item.setChecked(false);
+                    for (Marker marker : markers) {
+                        if (marker.getTag() instanceof TollParking) {
+                            marker.setVisible(false);
+                        }
+                    }
+                } else {
+                    for (Marker marker : markers) {
+                        item.setChecked(true);
+                        if (marker.getTag() instanceof TollParking) {
+                            marker.setVisible(true);
+                        }
+                    }
+                }
+                break;
+        }
+                return super.onOptionsItemSelected(item);
+        }
+
     /**
      * Adds the last clicked marker (i.e currently selected marker) to favorites
      */
     public void addMarkerToFavorite(View v) {
         if (!favorites.contains(lastClicked)) {
             favorites.add(lastClicked);
+            Toast.makeText(this, "Tillagd i favoriter", Toast.LENGTH_SHORT).show();
             ((ImageButton) findViewById(R.id.favorite_btn)).setImageResource(R.drawable.ic_star_black_24dp);
         } else {
             favorites.remove(lastClicked);
+            Toast.makeText(this, "Borttagen ur favoriter", Toast.LENGTH_SHORT).show();
             ((ImageButton) findViewById(R.id.favorite_btn)).setImageResource(R.drawable.ic_star_border_black_24dp);
         }
         Log.d(TAG, "items in favorites: " + favorites.size());
@@ -366,49 +433,43 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
      * add the marker to a ArrayList for control of markers
      */
     private void addMarkerToMap(Parking parking) {
-        mLHP = mMap.addMarker(new MarkerOptions().
-                position(parking.getPosition()).
-                title(parking.getName()).
-                snippet(parking.getParkingInformation()));
-        mMap.setOnMarkerClickListener(this);
-        mMap.setInfoWindowAdapter(new GoogleMap.InfoWindowAdapter() {
-            @Override
-            public View getInfoWindow(Marker arg0) {
-                return null;
-            }
+        parkings.add(parking);
+        for (Parking park : parkings) {
+            if (!park.getAdded()) {
+                Marker marker = mMap.addMarker(new MarkerOptions().
+                        position(parking.getPosition()).
+                        title(parking.getName()).
+                        snippet(parking.getParkingInformation()));
+                marker.setTag(parking);
+                marker.setVisible(false);
+                mMap.setInfoWindowAdapter(new GoogleMap.InfoWindowAdapter() {
+                    @Override
+                    public View getInfoWindow(Marker arg0) {
+                        return null;
+                    }
 
-            @Override
-            public View getInfoContents(Marker marker) {
-                LinearLayout info = new LinearLayout(MapActivity.this);
-                info.setOrientation(LinearLayout.VERTICAL);
-                TextView title = new TextView(MapActivity.this);
-                title.setTextColor(Color.BLACK);
-                title.setGravity(Gravity.CENTER);
-                title.setTypeface(null, Typeface.BOLD);
-                title.setText(marker.getTitle());
-                TextView snippet = new TextView(MapActivity.this);
-                snippet.setTextColor(Color.GRAY);
-                snippet.setText(marker.getSnippet());
-                info.addView(title);
-                info.addView(snippet);
-                return info;
+                    @Override
+                    public View getInfoContents(Marker marker) {
+                        LinearLayout info = new LinearLayout(MapActivity.this);
+                        info.setOrientation(LinearLayout.VERTICAL);
+                        TextView title = new TextView(MapActivity.this);
+                        title.setTextColor(Color.BLACK);
+                        title.setGravity(Gravity.CENTER);
+                        title.setTypeface(null, Typeface.BOLD);
+                        title.setText(marker.getTitle());
+                        TextView snippet = new TextView(MapActivity.this);
+                        snippet.setTextColor(Color.GRAY);
+                        snippet.setText(marker.getSnippet());
+                        info.addView(title);
+                        info.addView(snippet);
+                        return info;
+                    }
+                });
+                parking.setAdded(true);
+                markers.add(marker);
             }
-        });
+        }
     }
-
-
-    private static final String APP_ID = "00e0719c-23ce-4f32-badf-333a0e83fc9e";
-    private static final String SERVER_URL = "http://data.goteborg.se/ParkingService/v2.1/";
-
-    //Different types of parkings
-    private static final String PRIVATE_TOLL_PARKINGS = "PrivateTollParkings";
-    private static final String HANDICAP_PARKINGS = "HandicapParkings";
-    private static final String PUBLIC_TOLL_PARKINGS = "PublicTollParkings";
-    private static final String PUBLIC_TIME_PARKINGS = "PublicTimeParkings";
-
-    private static final String QUERY_OPTIONS = "/{" + APP_ID + "}?";
-
-
     public void onClick_QueryServer() {
         Log.d(TAG, "onClick_QueryServer: onClick_QueryServer() called");
 
@@ -423,13 +484,17 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
     //Inner class for doing background download
     private class AsyncDownloader extends AsyncTask<Object, Parking, Integer> {
 
+        private static final String APP_ID = "00e0719c-23ce-4f32-badf-333a0e83fc9e";
+        private static final String SERVER_URL = "http://data.goteborg.se/ParkingService/v2.1/";
+        private static final String QUERY_OPTIONS = "/{" + APP_ID + "}?";
+
+
         @Override
         protected Integer doInBackground(Object... objects) {
             if (objects[0] instanceof String) {
                 String typeOfParking = (String) objects[0];
                 XmlPullParser receivedData = tryDownloadingXmlData(typeOfParking);
-                int recordsFound = tryParsingXmlData(receivedData, typeOfParking);
-                return recordsFound;
+                return tryParsingXmlData(receivedData, typeOfParking);
             }
             return null;
         }
@@ -670,15 +735,15 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
                         if (tagName.equals(endTag)) {
                             recordsFound++;
 
-                            if (name == "") name = "NoData";
-                            if (owner == "") owner = "No Data";
-                            if (parkingSpaces == "") parkingSpaces = "No Data";
-                            if (maxParkingTime == "") maxParkingTime = "No Data";
-                            if (parkingCost == "") parkingCost = "No Data";
-                            if (currentParkingCost == "") currentParkingCost = "No Data";
-                            if (phoneParkingCode == "") phoneParkingCode = "No Data";
-                            if (lat == "") lat = "0";
-                            if (lng == "") lng = "0";
+                            if (name.equals("")) name = "NoData";
+                            if (owner.equals("")) owner = "No Data";
+                            if (parkingSpaces.equals("")) parkingSpaces = "No Data";
+                            if (maxParkingTime.equals("")) maxParkingTime = "No Data";
+                            if (parkingCost.equals("")) parkingCost = "No Data";
+                            if (currentParkingCost.equals("")) currentParkingCost = "No Data";
+                            if (phoneParkingCode.equals("")) phoneParkingCode = "No Data";
+                            if (lat.equals("")) lat = "0";
+                            if (lng.equals("")) lng = "0";
 
                             publishProgress(new PrivateTollParking(name,
                                     owner,
@@ -776,28 +841,25 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
                         if (tagName.equals(endTag)) {
                             recordsFound++;
 
-                            if (name == "") name = "NoData";
-                            if (owner == "") owner = "No Data";
-                            if (parkingSpaces == "") parkingSpaces = "No Data";
-                            if (maxParkingTime == "") maxParkingTime = "No Data";
-                            if (parkingCost == "") parkingCost = "No Data";
-                            if (currentParkingCost == "") currentParkingCost = "No Data";
-                            if (phoneParkingCode == "") phoneParkingCode = "No Data";
-                            if (lat == "") lat = "0";
-                            if (lng == "") lng = "0";
-                            if (maxParkingTimeLimitation == "")
+
+                            if (name.equals("")) name = "NoData";
+                            if (owner.equals("")) owner = "No Data";
+                            if (parkingSpaces.equals("")) parkingSpaces = "No Data";
+                            if (maxParkingTime.equals("")) maxParkingTime = "No Data";
+                            if (parkingCost.equals("")) parkingCost = "No Data";
+                            if (currentParkingCost.equals("")) currentParkingCost = "No Data";
+                            if (phoneParkingCode.equals("")) phoneParkingCode = "No Data";
+                            if (lat.equals("")) lat = "0";
+                            if (lng.equals("")) lng = "0";
+                            if (maxParkingTimeLimitation.equals(""))
                                 maxParkingTimeLimitation = "No data";
 
-                            publishProgress(new PublicTollParking(name,
+                            publishProgress(new PublicTimeParking(name,
                                     owner,
                                     parkingSpaces,
                                     maxParkingTime,
                                     Double.parseDouble(lat),
                                     Double.parseDouble(lng),
-                                    parkingCost,
-                                    parkingCharge,
-                                    currentParkingCost,
-                                    phoneParkingCode,
                                     maxParkingTimeLimitation
                             ));
                         }
@@ -886,16 +948,16 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
                         if (tagName.equals(endTag)) {
                             recordsFound++;
 
-                            if (name == "") name = "NoData";
-                            if (owner == "") owner = "No Data";
-                            if (parkingSpaces == "") parkingSpaces = "No Data";
-                            if (maxParkingTime == "") maxParkingTime = "No Data";
-                            if (parkingCost == "") parkingCost = "No Data";
-                            if (currentParkingCost == "") currentParkingCost = "No Data";
-                            if (phoneParkingCode == "") phoneParkingCode = "No Data";
-                            if (lat == "") lat = "0";
-                            if (lng == "") lng = "0";
-                            if (maxParkingTimeLimitation == "")
+                            if (name.equals("")) name = "NoData";
+                            if (owner.equals("")) owner = "No Data";
+                            if (parkingSpaces.equals("")) parkingSpaces = "No Data";
+                            if (maxParkingTime.equals("")) maxParkingTime = "No Data";
+                            if (parkingCost.equals("")) parkingCost = "No Data";
+                            if (currentParkingCost.equals("")) currentParkingCost = "No Data";
+                            if (phoneParkingCode.equals("")) phoneParkingCode = "No Data";
+                            if (lat.equals("")) lat = "0";
+                            if (lng.equals("")) lng = "0";
+                            if (maxParkingTimeLimitation.equals(""))
                                 maxParkingTimeLimitation = "No data";
 
                             publishProgress(new PublicTollParking(name,

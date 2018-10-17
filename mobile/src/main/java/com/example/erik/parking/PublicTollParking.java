@@ -5,6 +5,7 @@ public class PublicTollParking extends TollParking {
     //Instance variables
     private String parkingCharge;
     private String maxParkingTimeLimitation;
+    private String type = "Allmän betalparkering";
 
     public PublicTollParking(String name, String owner, String parkingSpaces, String maxParkingTime,
                              double lat, double lng, String parkingCost, String parkingCharge, String currentParkingCost,
@@ -18,8 +19,12 @@ public class PublicTollParking extends TollParking {
     @Override
     public String getParkingInformation() {
         return super.getParkingInformation() +
-                "MaxParkingTimeLimitation: " + getMaxParkingTimeLimitation() + "\n" +
-                "ParkingCharge: " + getParkingCharge() + "\n";
+                "Information: " + getMaxParkingTimeLimitation() + "\n" +
+                "Parkeringskostnad: " + getParkingCharge() + "\n";
+    }
+
+    public String getType(){
+        return type;
     }
 
     public String getMaxParkingTimeLimitation() {

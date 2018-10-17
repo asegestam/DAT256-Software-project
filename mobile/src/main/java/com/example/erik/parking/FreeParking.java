@@ -7,15 +7,17 @@ public class FreeParking extends Parking {
 
     public FreeParking(String name, String owner, String parkingSpaces, String maxParkingTime,
                        double lat, double lng, String maxParkingTimeLimitation) {
-        super(name, owner, parkingSpaces, maxParkingTime, lat, lng);
+        super(name, owner, parkingSpaces, maxParkingTime, lat, lng, false);
         this.maxParkingTimeLimitation = maxParkingTimeLimitation;
     }
 
     @Override
     public String getParkingInformation() {
         return super.getParkingInformation() +
-                "MaxParkingTimeLimitation: " + getMaxParkingTimeLimitation() + "\n";
+                "Information: " + getMaxParkingTimeLimitation() + "\n";
     }
+
+
 
     public String getMaxParkingTimeLimitation() {
         return maxParkingTimeLimitation;

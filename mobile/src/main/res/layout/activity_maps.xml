@@ -29,12 +29,6 @@
             android:layout_height="?attr/actionBarSize"
             android:background="?attr/colorPrimary"
             android:theme="@style/ThemeOverlay.AppCompat.ActionBar" />
-
-
-        <ImageButton
-            android:id="@+id/btnMarker"
-            android:layout_width="0dp"
-            android:layout_height="0dp" />
         <ImageButton
             android:layout_width="30dp"
             android:layout_height="30dp"

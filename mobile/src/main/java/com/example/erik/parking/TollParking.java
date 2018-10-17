@@ -8,10 +8,11 @@ public class TollParking extends Parking {
     private String phoneParkingCode;
 
 
+
     public TollParking(String name, String owner, String parkingSpaces, String maxParkingTime,
                        double lat, double lng, String parkingCost,
                        String currentParkingCost, String phoneParkingCode) {
-        super(name, owner, parkingSpaces, maxParkingTime, lat, lng);
+        super(name, owner, parkingSpaces, maxParkingTime, lat, lng, false);
         this.parkingCost = parkingCost;
         this.currentParkingCost = currentParkingCost;
         this.phoneParkingCode = phoneParkingCode;
@@ -20,9 +21,8 @@ public class TollParking extends Parking {
     @Override
     public String getParkingInformation() {
         return super.getParkingInformation() +
-                "ParkingCost: " + getParkingCost() + "\n" +
-                "CurrentParkingCost: " + getCurrentParkingCost() + "\n" +
-                "PhoneParkingCode: " + getPhoneParkingCode() + "\n";
+                "Parkeringskostnad: " + getParkingCost() + "\n" +
+                "Telefonkod: " + getPhoneParkingCode() + "\n";
     }
 
     public String getParkingCost() {
