@@ -1,5 +1,4 @@
 package com.example.erik.parking;
-
 import android.Manifest;
 import android.content.Context;
 import android.content.pm.PackageManager;
@@ -26,15 +25,12 @@ import android.view.MenuItem;
 import android.view.SubMenu;
 import android.view.View;
 import android.widget.ImageButton;
-
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
-
 import android.widget.LinearLayout;
 import android.widget.PopupMenu;
 import android.widget.TextView;
 import android.widget.Toast;
-
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
@@ -46,47 +42,38 @@ import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
-
 import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserException;
 import org.xmlpull.v1.XmlPullParserFactory;
-
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
 
-
 public class MapActivity extends AppCompatActivity implements OnMapReadyCallback, GoogleMap.OnMarkerClickListener,
-        GoogleMap.OnMapClickListener,
-        PopupMenu.OnMenuItemClickListener,
-        NavigationView.OnNavigationItemSelectedListener {
-
+        GoogleMap.OnMapClickListener, PopupMenu.OnMenuItemClickListener, NavigationView.OnNavigationItemSelectedListener {
 
     private static final String TAG = "MapActivity";
-
     private static final String FINE_LOCATION = Manifest.permission.ACCESS_FINE_LOCATION;
     private static final String COARSE_LOCATION = Manifest.permission.ACCESS_COARSE_LOCATION;
     private static final int LOCATION_PERMISSION_REQUEST_CODE = 1234;
     private static final float DEFAULT_ZOOM = 15f;
 
-
     private DrawerLayout mDrawerLayout;
     private Marker lastClicked;
     private Boolean mLocationPermissionsGranted = false;
     private GoogleMap mMap;
+    private SubMenu subMenu;
 
     //Different types of parkings
     private static final String PRIVATE_TOLL_PARKINGS = "PrivateTollParkings";
     private static final String HANDICAP_PARKINGS = "HandicapParkings";
     private static final String PUBLIC_TOLL_PARKINGS = "PublicTollParkings";
     private static final String PUBLIC_TIME_PARKINGS = "PublicTimeParkings";
-
+    //Lists
     private ArrayList<Parking> parkings = new ArrayList<>();
     private ArrayList<Marker> markers = new ArrayList<>();
     private ArrayList<Marker> favorites = new ArrayList<>();
-
-    private SubMenu subMenu;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -105,92 +92,18 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
         actionBar.setHomeAsUpIndicator(R.drawable.ic_menu);
         getLocationPermission();
     }
-
-    @Override
-    public boolean onNavigationItemSelected(MenuItem menuItem) {
-        int id = menuItem.getItemId();
-        if (id == R.id.lessThanTenMin)
-            lessThanTenMin();
-        else if (id == R.id.lessThanOneHour)
-            lessThanOneHour();
-        else if (id == R.id.greaterThanOneHour)
-            greaterThanOneHour();
-        else if (id == R.id.standardTheme ||
-                id == R.id.retroTheme ||
-                id == R.id.darkTheme) {
-            setMapTheme(id);
-        } else {
-            for (Marker marker : favorites) {
-                if (marker.getTitle().equals(menuItem.getTitle())) {
-                    moveCamera(marker.getPosition(), DEFAULT_ZOOM);
-                    marker.showInfoWindow();
-                    marker.setIcon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_AZURE));
-                    mDrawerLayout.closeDrawers();
-                    break;
-                }
-            }
-        }
-
-
-        return false;
-    }
-
-    public void lessThanTenMin() {
-        Toast.makeText(this, "lessThanTenMin", Toast.LENGTH_SHORT).show();
-    }
-
-    public void lessThanOneHour() {
-        Toast.makeText(this, "lessThanOneHour", Toast.LENGTH_SHORT).show();
-    }
-
-    public void greaterThanOneHour() {
-        Toast.makeText(this, "greaterThanOneHour", Toast.LENGTH_SHORT).show();
-    }
-
-    public void setMapTheme(int id) {
-        switch (id) {
-            case R.id.standardTheme:
-                mMap.setMapStyle(
-                        MapStyleOptions.loadRawResourceStyle(
-                                this, R.raw.standard_theme));
-                break;
-
-            case R.id.retroTheme:
-                mMap.setMapStyle(
-                        MapStyleOptions.loadRawResourceStyle(
-                                this, R.raw.retro_theme));
-                break;
-
-            case R.id.darkTheme:
-                mMap.setMapStyle(
-                        MapStyleOptions.loadRawResourceStyle(
-                                this, R.raw.dark_theme));
-                break;
-
-        }
-    }
-
     @Override
     public void onMapReady(GoogleMap googleMap) {
-
         //Notify the user that the map is ready to be used
         Toast.makeText(this, "Redo att köras", Toast.LENGTH_SHORT).show();
         Log.d(TAG, "onMapReady: Map is ready");
         mMap = googleMap;
-
         //Check if it is ok to get device location
         if (mLocationPermissionsGranted) {
             getDeviceLocation();
             if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED
                     && ActivityCompat.checkSelfPermission(this,
                     Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-                // TODO: Consider calling
-                //    ActivityCompat#requestPermissions
-                // here to request the missing permissions, and then overriding
-                //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
-                //                                          int[] grantResults)
-                // to handle the case where the user grants the permission. See the documentation
-                // for ActivityCompat#requestPermissions for more details.
                 return;
             }
             try {
@@ -212,11 +125,10 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
             mMap.setOnMarkerClickListener(this);
             mMap.setOnMapClickListener(this);
             onClick_QueryServer();
-
         }
     }
 
-    /*Initializes the map*/
+    /**Initializes the map*/
     private void initMap() {
         Log.d(TAG, "initMap: initializing the map");
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
@@ -226,7 +138,7 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
         mapFragment.getMapAsync(MapActivity.this);
     }
 
-    /*Gets the location from the device and sets it on the map*/
+    /**Gets the location from the device and sets it on the map*/
     private void getDeviceLocation() {
         Log.d(TAG, "getDeviceLocation: Getting the current location of this device");
 
@@ -263,14 +175,14 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
         }
     }
 
-    /*Moves the camera view of the map to wanted location and zoom*/
+    /**Moves the camera view of the map to wanted location and zoom*/
     private void moveCamera(LatLng latLng, float zoom) {
         Log.d(TAG, "moveCamera: Moving the camera to lat: " + latLng.latitude + ", lng: " + latLng.longitude);
 
         mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, zoom));
     }
 
-    /*Gets the necessary permissions from the user or asks for them*/
+    /**Gets the necessary permissions from the user or asks for them*/
     private void getLocationPermission() {
         Log.d(TAG, "getLocationPermission: getting location permissions");
         String[] permissions = {Manifest.permission.ACCESS_FINE_LOCATION,
@@ -316,11 +228,70 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
         }
     }
 
+    /** Handles navigation drawer clicks */
+    @Override
+    public boolean onNavigationItemSelected(MenuItem menuItem) {
+        int id = menuItem.getItemId();
+        if (id == R.id.lessThanTenMin)
+            lessThanTenMin();
+        else if (id == R.id.lessThanOneHour)
+            lessThanOneHour();
+        else if (id == R.id.greaterThanOneHour)
+            greaterThanOneHour();
+        else if (id == R.id.standardTheme ||
+                id == R.id.retroTheme ||
+                id == R.id.darkTheme) {
+            setMapTheme(id);
+        } else {
+            for (Marker marker : favorites) {
+                if (marker.getTitle().equals(menuItem.getTitle())) {
+                    moveCamera(marker.getPosition(), DEFAULT_ZOOM);
+                    marker.showInfoWindow();
+                    marker.setIcon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_AZURE));
+                    mDrawerLayout.closeDrawers();
+                    break;
+                }
+            }
+        }
+        return false;
+    }
 
-    /**
-     * Called when a user clicks on the map
-     */
+    public void lessThanTenMin() {
+        Toast.makeText(this, "lessThanTenMin", Toast.LENGTH_SHORT).show();
+    }
 
+    public void lessThanOneHour() {
+        Toast.makeText(this, "lessThanOneHour", Toast.LENGTH_SHORT).show();
+    }
+
+    public void greaterThanOneHour() {
+        Toast.makeText(this, "greaterThanOneHour", Toast.LENGTH_SHORT).show();
+    }
+
+    /** Sets the map theme depending on option chosen */
+    public void setMapTheme(int id) {
+        switch (id) {
+            case R.id.standardTheme:
+                mMap.setMapStyle(
+                        MapStyleOptions.loadRawResourceStyle(
+                                this, R.raw.standard_theme));
+                break;
+
+            case R.id.retroTheme:
+                mMap.setMapStyle(
+                        MapStyleOptions.loadRawResourceStyle(
+                                this, R.raw.retro_theme));
+                break;
+
+            case R.id.darkTheme:
+                mMap.setMapStyle(
+                        MapStyleOptions.loadRawResourceStyle(
+                                this, R.raw.dark_theme));
+                break;
+        }
+    }
+
+    /** Called when a user clicks on the map */
     @Override
     public void onMapClick(LatLng latlng) {
         //if there is a last clicked marker, set it to default color red
@@ -332,8 +303,7 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
             (findViewById(R.id.favorite_btn)).setVisibility(View.GONE);
         }
     }
-
-
+    /** Returns the distance between two latlng objects */
     public String getDistance(LatLng marker, LatLng myPos) {
         float b3 = (float) myPos.latitude;
         float b2 = (float) marker.latitude;
@@ -365,8 +335,7 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
         }
         return false;
     }
-
-
+    /** Returns the current location of the device as a latlng */
     private LatLng getMyLocation() {
         LocationManager lm = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
@@ -374,12 +343,10 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
         Location location = lm.getLastKnownLocation(LocationManager.GPS_PROVIDER);
         double longitude = location.getLongitude();
         double latitude = location.getLatitude();
-        LatLng myPos = new LatLng(latitude,longitude);
-        return  myPos;
+        return new LatLng(latitude,longitude);
     }
 
     /**Shows a popup menu when called with map type switching functionality*/
-
     public void showPopup(View v) {
         PopupMenu popup = new PopupMenu(this, v);
         // This activity implements OnMenuItemClickListener
@@ -420,7 +387,8 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
         return true;
     }
 
-    /** Handles the selection of options menu */
+    /** Handles the selection of options menu
+     * Changes visibility of markers depending on option chosen */
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
@@ -482,15 +450,13 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
                 return super.onOptionsItemSelected(item);
         }
 
-    /**
-     * Adds the last clicked marker (i.e currently selected marker) to favorites
-     */
+    /** Adds the last clicked marker (i.e currently selected marker) to favorites */
     public void addMarkerToFavorite(View v) {
         if (!favorites.contains(lastClicked)) {
             favorites.add(lastClicked);
             Toast.makeText(this, "Tillagd i favoriter", Toast.LENGTH_SHORT).show();
             ((ImageButton) findViewById(R.id.favorite_btn)).setImageResource(R.drawable.ic_star_black_24dp);
-            NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
+            NavigationView navigationView = findViewById(R.id.nav_view);
             Menu menu = navigationView.getMenu();
             if (subMenu == null)
                 subMenu = menu.addSubMenu("Favorites");
@@ -550,6 +516,7 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
             }
         }
     }
+    /** Queries the server for the parking information */
     public void onClick_QueryServer() {
         Log.d(TAG, "onClick_QueryServer: onClick_QueryServer() called");
 
@@ -560,7 +527,7 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
         new AsyncDownloader().execute(PUBLIC_TOLL_PARKINGS);
     }
 
-    //Inner class for doing background download
+    /** Inner class for doing background download */
     private class AsyncDownloader extends AsyncTask<Object, Parking, Integer> {
 
         private static final String APP_ID = "00e0719c-23ce-4f32-badf-333a0e83fc9e";
