@@ -29,10 +29,12 @@ import android.widget.ImageButton;
 
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
+
 import android.widget.LinearLayout;
 import android.widget.PopupMenu;
 import android.widget.TextView;
 import android.widget.Toast;
+
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
@@ -53,7 +55,6 @@ import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
-
 
 
 public class MapActivity extends AppCompatActivity implements OnMapReadyCallback, GoogleMap.OnMarkerClickListener,
@@ -106,7 +107,7 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
     }
 
     @Override
-    public boolean onNavigationItemSelected(MenuItem menuItem){
+    public boolean onNavigationItemSelected(MenuItem menuItem) {
         int id = menuItem.getItemId();
         if (id == R.id.lessThanTenMin)
             lessThanTenMin();
@@ -116,11 +117,11 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
             greaterThanOneHour();
         else if (id == R.id.standardTheme ||
                 id == R.id.retroTheme ||
-                id == R.id.darkTheme){
+                id == R.id.darkTheme) {
             setMapTheme(id);
-        }else{
-            for(Marker marker: favorites){
-                if(marker.getTitle().equals(menuItem.getTitle())){
+        } else {
+            for (Marker marker : favorites) {
+                if (marker.getTitle().equals(menuItem.getTitle())) {
                     moveCamera(marker.getPosition(), DEFAULT_ZOOM);
                     marker.showInfoWindow();
                     marker.setIcon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_AZURE));
@@ -131,23 +132,23 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
         }
 
 
-            return false;
+        return false;
     }
 
-    public void lessThanTenMin(){
+    public void lessThanTenMin() {
         Toast.makeText(this, "lessThanTenMin", Toast.LENGTH_SHORT).show();
     }
 
-    public void lessThanOneHour(){
+    public void lessThanOneHour() {
         Toast.makeText(this, "lessThanOneHour", Toast.LENGTH_SHORT).show();
     }
 
-    public void greaterThanOneHour(){
+    public void greaterThanOneHour() {
         Toast.makeText(this, "greaterThanOneHour", Toast.LENGTH_SHORT).show();
     }
 
-    public void setMapTheme(int id){
-        switch (id){
+    public void setMapTheme(int id) {
+        switch (id) {
             case R.id.standardTheme:
                 mMap.setMapStyle(
                         MapStyleOptions.loadRawResourceStyle(
@@ -205,7 +206,7 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
             } catch (Resources.NotFoundException e) {
                 Log.e(TAG, "Can't find style. Error: ", e);
             }
-            mMap.setPadding(0,170,0,0);
+            mMap.setPadding(0, 170, 0, 0);
             mMap.setMyLocationEnabled(true);
             mMap.setMyLocationEnabled(true);
             mMap.setOnMarkerClickListener(this);
@@ -338,28 +339,19 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
         float b2 = (float) marker.latitude;
         float c3 = (float) myPos.longitude;
         float c2 = (float) marker.longitude;
-
         float[] result = new float[1];
         Location.distanceBetween(b3, c3, b2, c2, result);
-
         return String.valueOf(Math.round(result[0]));
-
     }
 
     /** Called when a user clicks on the marker */
     @Override
     public boolean onMarkerClick(Marker marker) {
+        String distance = getDistance(marker.getPosition(), getMyLocation());
+        Toast.makeText(this, "Avstånd till parkering: " + distance + " m", Toast.LENGTH_SHORT).show();
         //if there was a lastClicked marker, set it to default color red
-
-
-
-
-        marker.setSnippet("fågelavstånd: " + getDistance(marker.getPosition(), getMyLocation()) + "m");
-
-
         if (lastClicked != null) {
             lastClicked.setIcon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED));
-
         }
         //change the clicked marker to blue
         marker.setIcon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_AZURE));
@@ -370,13 +362,14 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
         } else {
             ((ImageButton) findViewById(R.id.favorite_btn)).setImageResource(R.drawable.ic_star_black_24dp);
         }
-
         return false;
     }
 
 
     private LatLng getMyLocation() {
         LocationManager lm = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+        }
         Location location = lm.getLastKnownLocation(LocationManager.GPS_PROVIDER);
         double longitude = location.getLongitude();
         double latitude = location.getLatitude();
@@ -388,7 +381,6 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
 
     public void showPopup(View v) {
         PopupMenu popup = new PopupMenu(this, v);
-
         // This activity implements OnMenuItemClickListener
         popup.setOnMenuItemClickListener(this);
         popup.inflate(R.menu.maptype_menu);
