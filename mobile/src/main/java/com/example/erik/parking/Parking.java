@@ -4,17 +4,33 @@ import com.google.android.gms.maps.model.LatLng;
 
 public class Parking {
 
-    //Variabels
-    private LatLng position;
+    //Instance Variabels
     private String name;
-    private double cost;
+    private String owner;
+    private String parkingSpaces;
+    private String maxParkingTime;
+    private LatLng position;
     private boolean isAdded;
+    private String type ="";
 
-    public Parking(String name, double lat, double lng, double cost, boolean isAdded){
+    public Parking(String name, String owner, String parkingSpaces, String maxParkingTime, double lat, double lng, boolean isAdded){
         this.name = name;
-        position = new LatLng(lat, lng);
-        this.cost = cost;
+        this.owner = owner;
+        this.parkingSpaces = parkingSpaces;
+        this.maxParkingTime = maxParkingTime;
         this.isAdded = isAdded;
+        position = new LatLng(lat, lng);
+    }
+
+    public String getParkingInformation() {
+        return  "Typ av parkering: " + this.getType() + "\n" +
+                "Ägare: " + getOwner() + "\n" +
+                "Antal platser: " + getParkingSpaces() + "\n" +
+                "Maximal parkeringstid: " + getMaxParkingTime() + "\n";
+    }
+
+    public String getType(){
+        return type;
     }
 
     public String getName() {
@@ -25,27 +41,45 @@ public class Parking {
         this.name = name;
     }
 
+    public String getOwner() {
+        return owner;
+    }
+
+    public void setOwner(String owner) {
+        this.owner = owner;
+    }
+
+    public String getParkingSpaces() {
+        return parkingSpaces;
+    }
+
+    public void setParkingSpaces(String parkingSpaces) {
+        this.parkingSpaces = parkingSpaces;
+    }
+
+    public String getMaxParkingTime() {
+        return maxParkingTime;
+    }
+
+    public void setMaxParkingTime(String maxParkingTime) {
+        this.maxParkingTime = maxParkingTime;
+    }
+
     public LatLng getPosition() {
         return position;
     }
 
-    public void setPosition(LatLng position){
+    public void setPosition(LatLng position) {
         this.position = position;
-    }
-
-    public double getCost() {
-        return cost;
-    }
-
-    public void setCost(double cost) {
-        this.cost = cost;
     }
 
     public boolean getAdded(){
         return isAdded;
     }
-    public void setAdded(boolean state){
-        this.isAdded = state;
+
+    public void setAdded(boolean add){
+        this.isAdded = add;
     }
+
 
 }
