@@ -7,10 +7,10 @@ import android.content.res.XmlResourceParser;
 import android.location.Location;
 import android.location.LocationManager;
 import android.os.AsyncTask;
+import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
-import android.os.Bundle;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
@@ -18,23 +18,23 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.PopupMenu;
 import android.widget.ImageButton;
+import android.widget.PopupMenu;
 import android.widget.Toast;
 
+
+import com.google.android.gms.location.FusedLocationProviderClient;
+import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
-
-import com.google.android.gms.location.FusedLocationProviderClient;
-import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
-import com.google.android.gms.tasks.Task;
 import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
 
 import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserException;
@@ -236,9 +236,9 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
 
         float[] result = new float[1];
         Location.distanceBetween(b3, c3, b2, c2, result);
-        String ressssult = String.valueOf(result[0]);
 
-        return ressssult;
+        return String.valueOf(Math.round(result[0]));
+
     }
 
     /** Called when a user clicks on the marker */
@@ -247,11 +247,13 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
         //if there was a lastClicked marker, set it to default color red
 
 
+
+
+        marker.setSnippet("fågelavstånd: " + getDistance(marker.getPosition(), getMyLocation()) + "m");
+
         if (lastClicked != null) {
             lastClicked.setIcon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED));
 
-
-            marker.setSnippet("fågelavstånd: " + getDistance(marker.getPosition(), getMyLocation()) + "m");
         }
         //change the clicked marker to blue
         marker.setIcon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_AZURE));
