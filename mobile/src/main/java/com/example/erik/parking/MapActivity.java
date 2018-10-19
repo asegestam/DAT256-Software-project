@@ -347,8 +347,9 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
     /** Called when a user clicks on the marker */
     @Override
     public boolean onMarkerClick(Marker marker) {
+        Parking parking = (Parking)marker.getTag();
         String distance = getDistance(marker.getPosition(), getMyLocation());
-        Toast.makeText(this, "Avstånd till parkering: " + distance + " m", Toast.LENGTH_SHORT).show();
+        marker.setSnippet(parking.getParkingInformation() + "Avstånd: " + distance +" m");
         //if there was a lastClicked marker, set it to default color red
         if (lastClicked != null) {
             lastClicked.setIcon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED));
@@ -507,7 +508,6 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
 
     /**
      * Adds a parking object to a ArrayList
-
      * If the parking spot is added to the map -
      * create a marker and add it to the map
      * add the marker to a ArrayList for control of markers
