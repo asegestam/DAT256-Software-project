@@ -26,21 +26,13 @@ import android.view.MenuItem;
 import android.view.SubMenu;
 import android.view.View;
 import android.widget.ImageButton;
-<<<<<<< HEAD
-import android.widget.PopupMenu;
-import android.widget.Toast;
-
 
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
-=======
 import android.widget.LinearLayout;
 import android.widget.PopupMenu;
 import android.widget.TextView;
 import android.widget.Toast;
-
-
->>>>>>> 5f28876f58c42a26eaf4d10e1aad061c2304e318
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
@@ -63,16 +55,13 @@ import java.net.URL;
 import java.util.ArrayList;
 
 
-<<<<<<< HEAD
-public class MapActivity extends AppCompatActivity implements OnMapReadyCallback, GoogleMap.OnMapClickListener, GoogleMap.OnMarkerClickListener, PopupMenu.OnMenuItemClickListener {
-    /** Static declarations */
-=======
+
 public class MapActivity extends AppCompatActivity implements OnMapReadyCallback, GoogleMap.OnMarkerClickListener,
         GoogleMap.OnMapClickListener,
         PopupMenu.OnMenuItemClickListener,
         NavigationView.OnNavigationItemSelectedListener {
 
->>>>>>> 5f28876f58c42a26eaf4d10e1aad061c2304e318
+
     private static final String TAG = "MapActivity";
 
     private static final String FINE_LOCATION = Manifest.permission.ACCESS_FINE_LOCATION;
@@ -308,13 +297,10 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
         switch (requestCode) {
             case LOCATION_PERMISSION_REQUEST_CODE: {
                 if (grantResults.length > 0) {
-<<<<<<< HEAD
-                    for (int i = 0; i < grantResults.length; i++) {
-                        if (grantResults[i] != PackageManager.PERMISSION_GRANTED) {
-=======
+
                     for (int grantResult : grantResults) {
                         if (grantResult != PackageManager.PERMISSION_GRANTED) {
->>>>>>> 5f28876f58c42a26eaf4d10e1aad061c2304e318
+
                             Log.d(TAG, "onRequestPermissionsResult: permission failed");
                             mLocationPermissionsGranted = false;
                             return;
@@ -329,13 +315,11 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
         }
     }
 
-<<<<<<< HEAD
-    /**Called when a user clicks on the map */
-=======
+
     /**
      * Called when a user clicks on the map
      */
->>>>>>> 5f28876f58c42a26eaf4d10e1aad061c2304e318
+
     @Override
     public void onMapClick(LatLng latlng) {
         //if there is a last clicked marker, set it to default color red
@@ -348,7 +332,7 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
         }
     }
 
-<<<<<<< HEAD
+
     public String getDistance(LatLng marker, LatLng myPos) {
         float b3 = (float) myPos.latitude;
         float b2 = (float) marker.latitude;
@@ -372,14 +356,7 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
 
         marker.setSnippet("fågelavstånd: " + getDistance(marker.getPosition(), getMyLocation()) + "m");
 
-=======
-    /**
-     * Called when a user clicks on the marker
-     */
-    @Override
-    public boolean onMarkerClick(Marker marker) {
-        //if there was a lastClicked marker, set it to default color red
->>>>>>> 5f28876f58c42a26eaf4d10e1aad061c2304e318
+
         if (lastClicked != null) {
             lastClicked.setIcon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED));
 
@@ -397,7 +374,7 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
         return false;
     }
 
-<<<<<<< HEAD
+
     private LatLng getMyLocation() {
         LocationManager lm = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
         Location location = lm.getLastKnownLocation(LocationManager.GPS_PROVIDER);
@@ -408,11 +385,7 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
     }
 
     /**Shows a popup menu when called with map type switching functionality*/
-=======
-    /**
-     * Shows a popup menu when called with map type switching functionality
-     */
->>>>>>> 5f28876f58c42a26eaf4d10e1aad061c2304e318
+
     public void showPopup(View v) {
         PopupMenu popup = new PopupMenu(this, v);
 
@@ -539,40 +512,10 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
         Log.d(TAG, "items in favorites: " + favorites.size());
     }
 
-<<<<<<< HEAD
-    @Override
-    public void onPointerCaptureChanged(boolean hasCapture) {
 
-    }
-
-    //ParkingList starts here
-
-
-
-    private static final String LATITUDE = "57.707664";
-    private static final String LONGITUDE = "11.938690";
-    private static final String RADIUS = "500";
-
-
-
-    private static final String APP_ID = "00e0719c-23ce-4f32-badf-333a0e83fc9e";
-    private static final String SERVER_URL = "http://data.goteborg.se/ParkingService/v2.1/PrivateTollParkings/";
-    private static final String QUERY_OPTIONS = "{" + APP_ID + "}?latitude={" + LATITUDE + "}&longitude={" + LONGITUDE + "}&radius={" + RADIUS + "}";
-    private static final String QUERY_URL = SERVER_URL + QUERY_OPTIONS;
-
-
-
-    public void onClick_QueryServer(){
-        Log.d(TAG, "onClick_QueryServer: onClick_QueryServer() called");
-        AsyncDownloader downloader = new AsyncDownloader();
-        downloader.execute();
-    }
-
-    /** Adds a parking object to a ArrayList
-=======
     /**
      * Adds a parking object to a ArrayList
->>>>>>> 5f28876f58c42a26eaf4d10e1aad061c2304e318
+
      * If the parking spot is added to the map -
      * create a marker and add it to the map
      * add the marker to a ArrayList for control of markers
