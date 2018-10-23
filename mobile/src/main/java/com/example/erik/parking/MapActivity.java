@@ -472,7 +472,7 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
         switch (item.getItemId()) {
             case android.R.id.home:
                 mDrawerLayout.openDrawer(GravityCompat.START);
-                //TODO implementera filter skit här
+                break;
             case R.id.hkp:
                 if (item.isChecked()) {
                     item.setChecked(false);
