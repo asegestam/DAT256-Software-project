@@ -454,6 +454,7 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
         MenuInflater inflater = getMenuInflater();
         filterMenu = menu;
         inflater.inflate(R.menu.filter_menu, menu);
+        menu.getItem(1).setChecked(true);
         return true;
     }
 
@@ -557,7 +558,9 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
                         title(parking.getName()).
                         snippet(parking.getParkingInformation()));
                 marker.setTag(parking);
-                marker.setVisible(false);
+                if(!(parking instanceof FreeParking) || (parking instanceof HandicapParking)){
+                    marker.setVisible(false);
+                }
                 mMap.setInfoWindowAdapter(new GoogleMap.InfoWindowAdapter() {
                     @Override
                     public View getInfoWindow(Marker arg0) {
