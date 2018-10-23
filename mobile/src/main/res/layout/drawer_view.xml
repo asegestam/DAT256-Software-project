@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_height="match_parent"
+    android:layout_width="match_parent">
+
+
+    <item android:title="Ärende">
+        <menu>
+            <item
+                android:id="@+id/lessThanThirtyMin"
+                android:title="&lt; 30min" />
+            <item
+                android:id="@+id/lessThanOneHour"
+                android:title="&lt; 1h" />
+            <item
+                android:id="@+id/lessThanTwoHour"
+                android:title="&lt; 2h" />
+            <item
+                android:id="@+id/greaterThanFourHour"
+                android:title="&gt; 4h" />
+            <item
+                android:id="@+id/allParkings"
+                android:title="Återställ" />
+        </menu>
+    </item>
+
+    <item android:title="kart-teman">
+        <menu>
+            <item
+                android:id="@+id/standardTheme"
+                android:title="Standard"/>
+            <item
+                android:id="@+id/retroTheme"
+                android:title="Retro"/>
+            <item
+                android:id="@+id/darkTheme"
+                android:title="Mörk"/>
+        </menu>
+    </item>
+</menu>
