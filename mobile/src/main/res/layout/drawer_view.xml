@@ -4,21 +4,27 @@
     android:layout_width="match_parent">
 
 
-    <item android:title="Errand Time">
+    <item android:title="Ärende">
         <menu>
             <item
-                android:id="@+id/lessThanTenMin"
-                android:title="&lt; 10min" />
+                android:id="@+id/lessThanThirtyMin"
+                android:title="&lt; 30min" />
             <item
                 android:id="@+id/lessThanOneHour"
                 android:title="&lt; 1h" />
             <item
-                android:id="@+id/greaterThanOneHour"
-                android:title="&gt; 1h" />
+                android:id="@+id/lessThanTwoHour"
+                android:title="&lt; 2h" />
+            <item
+                android:id="@+id/greaterThanFourHour"
+                android:title="&gt; 4h" />
+            <item
+                android:id="@+id/allParkings"
+                android:title="Återställ" />
         </menu>
     </item>
 
-    <item android:title="Map Themes">
+    <item android:title="kart-teman">
         <menu>
             <item
                 android:id="@+id/standardTheme"
@@ -28,7 +34,7 @@
                 android:title="Retro"/>
             <item
                 android:id="@+id/darkTheme"
-                android:title="Dark"/>
+                android:title="Mörk"/>
         </menu>
     </item>
 </menu>

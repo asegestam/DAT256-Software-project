@@ -84,6 +84,7 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
     private ArrayList<Marker> favorites = new ArrayList<>();
 
     private SubMenu subMenu;
+    private Menu filterMenu;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -106,12 +107,16 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
     @Override
     public boolean onNavigationItemSelected(MenuItem menuItem){
         int id = menuItem.getItemId();
-        if (id == R.id.lessThanTenMin)
-            lessThanTenMin();
+        if (id == R.id.lessThanThirtyMin)
+            lessThanThirtyMin();
         else if (id == R.id.lessThanOneHour)
             lessThanOneHour();
-        else if (id == R.id.greaterThanOneHour)
-            greaterThanOneHour();
+        else if (id == R.id.lessThanTwoHour)
+            lessThanTwoHour();
+        else if (id == R.id.greaterThanFourHour)
+            greaterThanFourHour();
+        else if (id == R.id.allParkings)
+            activateAllChoosenMarkers();
         else if (id == R.id.standardTheme ||
                 id == R.id.retroTheme ||
                 id == R.id.darkTheme){
@@ -132,16 +137,84 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
             return false;
     }
 
-    public void lessThanTenMin(){
-        Toast.makeText(this, "lessThanTenMin", Toast.LENGTH_SHORT).show();
+    private void activateAllChoosenMarkers(){
+        MenuItem item;
+
+        item = filterMenu.findItem(R.id.hkp);
+        if (item.isChecked()){
+            for (Marker marker: markers){
+                if (marker.getTag() instanceof HandicapParking)
+                    marker.setVisible(true);
+            }
+        }
+
+        item = filterMenu.findItem(R.id.free);
+        if (item.isChecked()){
+            for (Marker marker : markers) {
+                if (marker.getTag() instanceof FreeParking && !(marker.getTag() instanceof HandicapParking)) {
+                    marker.setVisible(true);
+                }
+            }
+        }
+
+        item = filterMenu.findItem(R.id.betal);;
+        if (item.isChecked()){
+            for (Marker marker : markers) {
+                if (marker.getTag() instanceof TollParking) {
+                    marker.setVisible(true);
+                }
+            }
+        }
+
+    }
+
+    public void lessThanThirtyMin(){
+        Toast.makeText(this, "Filtrerar bort parkeringar under 30min", Toast.LENGTH_SHORT).show();
+        activateAllChoosenMarkers();
+        for (Marker marker: markers) {
+            if (marker.isVisible()){
+                Parking parking = (Parking) marker.getTag();
+                if (parking.getMaxParkingTime().equals("10 min"))
+                    marker.setVisible(false);
+            }
+        }
     }
 
     public void lessThanOneHour(){
-        Toast.makeText(this, "lessThanOneHour", Toast.LENGTH_SHORT).show();
+        Toast.makeText(this, "Filtrerar bort parkeringar under 1 timme", Toast.LENGTH_SHORT).show();
+        activateAllChoosenMarkers();
+        for (Marker marker: markers) {
+            if (marker.isVisible()){
+                Parking parking = (Parking) marker.getTag();
+                if (parking.getMaxParkingTime().equals("10 min") || parking.getMaxParkingTime().equals("30 min"))
+                    marker.setVisible(false);
+            }
+        }
     }
 
-    public void greaterThanOneHour(){
-        Toast.makeText(this, "greaterThanOneHour", Toast.LENGTH_SHORT).show();
+    public void lessThanTwoHour(){
+        Toast.makeText(this, "Filtrerar bort parkeringar under 2 timmar", Toast.LENGTH_SHORT).show();
+        activateAllChoosenMarkers();
+        for (Marker marker: markers) {
+            if (marker.isVisible()){
+                Parking parking = (Parking) marker.getTag();
+                if (parking.getMaxParkingTime().equals("10 min") || parking.getMaxParkingTime().equals("30 min") || parking.getMaxParkingTime().equals("1 tim"))
+                    marker.setVisible(false);
+            }
+        }
+    }
+
+    public void greaterThanFourHour(){
+        Toast.makeText(this, "Filtrerar bort parkeringar under 4 timmar", Toast.LENGTH_SHORT).show();
+        activateAllChoosenMarkers();
+        for (Marker marker: markers) {
+            if (marker.isVisible()){
+                Parking parking = (Parking) marker.getTag();
+                if (parking.getMaxParkingTime().equals("10 min") || parking.getMaxParkingTime().equals("30 min") || parking.getMaxParkingTime().equals("1 tim") || parking.getMaxParkingTime().equals("2 tim"))
+                    marker.setVisible(false);
+            }
+
+        }
     }
 
     public void setMapTheme(int id){
@@ -388,6 +461,7 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater inflater = getMenuInflater();
+        filterMenu = menu;
         inflater.inflate(R.menu.filter_menu, menu);
         return true;
     }
