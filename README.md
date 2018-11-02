@@ -15,4 +15,5 @@ Albin Segestam: abbesegestam@gmail.com 	alt. segestam@student.chalmers.se
 
 Link to our team document including weekly team reflections, social contract, DoD:https://docs.google.com/document/d/13Lf5KrzTKrshp3Xcl7KgJwdo27ADUuyQJxzg6MNbF6U/edit#
 
-Link to our scrum board: https://trello.com/b/1wBUTZbI/par-king
+Link to our scrum board: https://trello.com/b/1wBUTZbI/par-king you can see all of our tasks in the archive.
+Stories have checklists with a certain color/colors, related tasks have the same color/colors.
