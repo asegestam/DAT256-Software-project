@@ -16,4 +16,11 @@ Albin Segestam: abbesegestam@gmail.com 	alt. segestam@student.chalmers.se
 
 Link to our team document including team reflections, social contract, DoD:https://docs.google.com/document/d/13Lf5KrzTKrshp3Xcl7KgJwdo27ADUuyQJxzg6MNbF6U/edit#
 
+Individual reflection Erik: https://docs.google.com/document/d/1PHlCYH73-Lo8Sjv1c1fDPwLFC7KeJysY6ZdUk--aRzU/edit?usp=sharing
+Individual reflection Albin:
+Individual reflection Åke:
+Individual reflection Theo:
+Individual reflection Markus:
+
+
 Link to our scrum board: https://trello.com/b/1wBUTZbI/par-king
